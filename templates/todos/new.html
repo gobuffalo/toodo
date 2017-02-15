@@ -1,0 +1,15 @@
+<h1>New Todo</h1>
+
+{{#if errors}}
+  <div class="alert alert-danger">
+  {{#each errors as |k v|}}
+    {{v}}
+  {{/each}}
+  </div>
+{{/if}}
+
+{{#form_for todo action="/todos"}}
+  {{f.InputTag "Title"}}
+  {{f.TextArea "Description" rows=10}}
+  <button class="btn btn-success">Save</button>
+{{/form_for}}

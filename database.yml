@@ -1,0 +1,7 @@
+development:
+  dialect: "sqlite3"
+  database: "./development.sqlite"
+
+test:
+  dialect: "sqlite"
+  database: "./test.sqlite"

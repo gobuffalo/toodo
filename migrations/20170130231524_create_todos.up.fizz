@@ -1,0 +1,6 @@
+create_table("todos", func(t) {
+	t.Column("id", "uuid", {"primary": true})
+	t.Column("title", "string", {})
+	t.Column("description", "text", {"null": true})
+	t.Column("completed", "bool", {})
+})
