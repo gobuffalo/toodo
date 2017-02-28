@@ -3,7 +3,5 @@
 <a href="/todos/new" class="btn btn-primary">New Todo</a>
 
 <ul>
-  <%= for (todo) in todos { %>
-    <%= partial("todos/todo.html") %>
-  <% } %>
+  <%= for (todo) in todos { return partial("todos/todo.html") } %>
 </ul>

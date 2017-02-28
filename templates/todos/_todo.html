@@ -1,8 +1,8 @@
-<li id="todo-<%= todo.ID %>" class="<%= if (todo.Completed) { %>completed<% } %>">
+<li id="todo-<%= todo.ID %>" class="<%= if (todo.Completed) { return "completed" } %>">
   <h2><%= todo.Title %></h2>
-  <%= if (todo.Description) { %>
-    <%= markdown(todo.Description.String) %>
-  <% } %>
+
+  <%= if (todo.Description) { return markdown(todo.Description.String) } %>
+
   <%= form_for(todo, {action: todo.URL(), method: "PUT", "data-remote": true}) { %>
     <%= f.CheckboxTag("Completed", {label: " Mark as Completed", class: "completed-box"}) %>
   <% } %>

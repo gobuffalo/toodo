@@ -2,9 +2,7 @@
 
 <%= if (errors) { %>
   <div class="alert alert-danger">
-  <%= for (k, v) in errors { %>
-    <%= v %>
-  <% } %>
+  <%= for (k, v) in errors { return v } %>
   </div>
 <% } %>
 
