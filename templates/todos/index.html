@@ -3,7 +3,7 @@
 <a href="/todos/new" class="btn btn-primary">New Todo</a>
 
 <ul>
-  {{#each todos as |todo|}}
-  {{partial "todos/todo.html"}}
-  {{/each}}
+  <%= for (todo) in todos { %>
+    <%= partial("todos/todo.html") %>
+  <% } %>
 </ul>

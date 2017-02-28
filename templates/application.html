@@ -9,17 +9,17 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
-        {{#each flash as |k messages|}}
-          {{#each messages as |msg|}}
-            <div class="alert alert-{{k}}" role="alert">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              {{msg}}
+        <%= for (k, messages) in flash { %>
+          <%= for (msg) in messages { %>
+            <div class="alert alert-<%= k %>" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <%= msg %>
             </div>
-          {{/each}}
-        {{/each}}
+          <% } %>
+        <% } %>
       </div>
     </div>
-    {{ yield }}
+    <%= yield %>
   </div>
 
   <script src="/assets/application.js" type="text/javascript" charset="utf-8"></script>

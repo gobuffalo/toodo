@@ -1,2 +1,2 @@
-var li = $("#todo-{{todo.ID}}");
+var li = $("#todo-<%= todo.ID %>");
 li.toggleClass("completed");

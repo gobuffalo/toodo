@@ -1,15 +1,15 @@
 <h1>New Todo</h1>
 
-{{#if errors}}
+<%= if (errors) { %>
   <div class="alert alert-danger">
-  {{#each errors as |k v|}}
-    {{v}}
-  {{/each}}
+  <%= for (k, v) in errors { %>
+    <%= v %>
+  <% } %>
   </div>
-{{/if}}
+<% } %>
 
-{{#form_for todo action="/todos"}}
-  {{f.InputTag "Title"}}
-  {{f.TextArea "Description" rows=10}}
+<%= form_for(todo, {action: "/todos"}) { %>
+  <%= f.InputTag("Title") %>
+  <%= f.TextArea("Description", {rows: 10}) %>
   <button class="btn btn-success">Save</button>
-{{/form_for}}
+<% } %>

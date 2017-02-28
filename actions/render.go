@@ -6,7 +6,7 @@ import (
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/gobuffalo/buffalo/render"
 	"github.com/gobuffalo/buffalo/render/resolvers"
-	"github.com/gobuffalo/tags/form/bootstrap"
+	"github.com/gobuffalo/plush"
 )
 
 var r *render.Engine
@@ -14,14 +14,14 @@ var r *render.Engine
 func init() {
 	r = render.New(render.Options{
 		HTMLLayout:     "application.html",
-		CacheTemplates: ENV == "production",
+		TemplateEngine: plush.BuffaloRenderer,
 		FileResolverFunc: func() resolvers.FileResolver {
 			return &resolvers.RiceBox{
 				Box: rice.MustFindBox("../templates"),
 			}
 		},
 		Helpers: map[string]interface{}{
-			"form_for": bootstrap.FormForHelper,
+			"form_for": plush.BootstrapFormForHelper,
 		},
 	})
 }
