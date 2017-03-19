@@ -4,6 +4,7 @@ import (
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/buffalo/middleware"
 	"github.com/gobuffalo/envy"
+	"github.com/gobuffalo/packr"
 	"github.com/gobuffalo/toodo/models"
 )
 
@@ -24,7 +25,7 @@ func App() *buffalo.App {
 
 		app.Use(middleware.PopTransaction(models.DB))
 
-		app.ServeFiles("/assets", assetsPath())
+		app.ServeFiles("/assets", packr.NewBox("../public/assets"))
 
 		var todoResource buffalo.Resource
 		todoResource = TodosResource{&buffalo.BaseResource{}}
