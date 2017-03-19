@@ -8,10 +8,10 @@ import (
 )
 
 type ActionSuite struct {
-	*suite.ActionSuite
+	*suite.Action
 }
 
 func Test_ActionSuite(t *testing.T) {
-	as := &ActionSuite{suite.New(actions.App())}
+	as := &ActionSuite{suite.NewAction(actions.App())}
 	suite.Run(t, as)
 }

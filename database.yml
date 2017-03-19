@@ -1,7 +1,11 @@
 development:
   dialect: "sqlite3"
-  database: "./development.sqlite"
+  database: {{env "GOPATH" }}/src/github.com/gobuffalo/toodo/toodo_development.sqlite
 
 test:
-  dialect: "sqlite"
-  database: "./test.sqlite"
+  dialect: "sqlite3"
+  database: {{env "GOPATH" }}/src/github.com/gobuffalo/toodo/toodo_test.sqlite
+
+production:
+  dialect: "sqlite3"
+  database: {{env "GOPATH" }}/src/github.com/gobuffalo/toodo/toodo_production.sqlite
