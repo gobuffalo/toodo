@@ -1,12 +1,6 @@
 <h1>New Todo</h1>
 
-<%= if (errors) { %>
-  <div class="alert alert-danger">
-  <%= for (k, v) in errors { return v } %>
-  </div>
-<% } %>
-
-<%= form_for(todo, {action: "/todos"}) { %>
+<%= form_for(todo, {action: "/todos", errors: errors}) { %>
   <%= f.InputTag("Title") %>
   <%= f.TextArea("Description", {rows: 10}) %>
   <button class="btn btn-success">Save</button>
