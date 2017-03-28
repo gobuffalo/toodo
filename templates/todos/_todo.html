@@ -4,6 +4,6 @@
   <%= if (todo.Description) { return markdown(todo.Description.String) } %>
 
   <%= form_for(todo, {action: todo.URL(), method: "PUT", "data-remote": true}) { %>
-    <%= f.CheckboxTag("Completed", {label: " Mark as Completed", class: "completed-box"}) %>
+    <%= f.CheckboxTag("Completed", {label: " Mark as Completed", class: "completed-box", unchecked: false}) %>
   <% } %>
 </li>
