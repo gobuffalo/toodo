@@ -1,4 +1,4 @@
-memo = ""
+memo = "c28531de43801356957371058417e52d1f33772cfb52933292d775c4f1496bb8"
 
 [[projects]]
   branch = "master"
@@ -50,7 +50,7 @@ memo = ""
 [[projects]]
   branch = "development"
   name = "github.com/gobuffalo/buffalo"
-  packages = [".","binding","middleware","render"]
+  packages = [".","binding","middleware","middleware/csrf","render","worker"]
   revision = "8f2eea2f791285e403f34bdb2c90fb31cfcfa35e"
 
 [[projects]]
@@ -68,7 +68,7 @@ memo = ""
 [[projects]]
   branch = "master"
   name = "github.com/gobuffalo/plush"
-  packages = ["."]
+  packages = [".","ast","lexer","parser","token"]
   revision = "091c255b7362a3bd01469a152b835b02e528af84"
 
 [[projects]]
@@ -111,13 +111,13 @@ memo = ""
 
 [[projects]]
   name = "github.com/jmoiron/sqlx"
-  packages = ["."]
+  packages = [".","reflectx"]
   revision = "7396209bbeada6a4fcc28aa9408f89b2e71cac39"
 
 [[projects]]
   branch = "master"
   name = "github.com/lib/pq"
-  packages = ["."]
+  packages = [".","oid"]
   revision = "2704adc878c21e1329f46f6e56a1c387d788ff94"
 
 [[projects]]
@@ -147,13 +147,13 @@ memo = ""
 [[projects]]
   branch = "master"
   name = "github.com/markbates/pop"
-  packages = [".","nulls"]
+  packages = [".","columns","fizz","fizz/translators","nulls"]
   revision = "7ec8a9f82d003f80e85822408c00c8fc35412342"
 
 [[projects]]
   branch = "master"
   name = "github.com/markbates/refresh"
-  packages = ["refresh/web"]
+  packages = ["refresh","refresh/web"]
   revision = "f66cdea4aaf2ab497fd7e5b6bc065e967668c03f"
 
 [[projects]]
@@ -171,7 +171,7 @@ memo = ""
 [[projects]]
   branch = "master"
   name = "github.com/mattn/anko"
-  packages = ["builtins","vm"]
+  packages = ["ast","builtins","builtins/encoding/json","builtins/errors","builtins/flag","builtins/fmt","builtins/github.com/daviddengcn/go-colortext","builtins/io","builtins/io/ioutil","builtins/math","builtins/math/big","builtins/math/rand","builtins/net","builtins/net/http","builtins/net/url","builtins/os","builtins/os/exec","builtins/os/signal","builtins/path","builtins/path/filepath","builtins/regexp","builtins/runtime","builtins/sort","builtins/strings","builtins/time","parser","vm"]
   revision = "a3969c63681391ec413427cae813d6d59d6031f1"
 
 [[projects]]
@@ -278,13 +278,13 @@ memo = ""
 [[projects]]
   branch = "master"
   name = "github.com/stretchr/testify"
-  packages = ["require","suite"]
+  packages = ["assert","require","suite"]
   revision = "4d4bfba8f1d1027c4fdbe371823030df51419987"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","html"]
+  packages = ["context","html","html/atom"]
   revision = "973f3f3bbd50e92b13faa6c53ec16f49b45e851c"
 
 [[projects]]
