@@ -5,7 +5,7 @@ import (
 	. "github.com/markbates/grift/grift"
 )
 
-var _ = Add("seed", func(c *Context) error {
+var _ = Add("db:seed", func(c *Context) error {
 	err := models.DB.RawQuery("delete from todos").Exec()
 	if err != nil {
 		return err
