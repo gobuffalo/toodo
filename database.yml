@@ -7,5 +7,4 @@ test:
   database: {{env "GOPATH" }}/src/github.com/gobuffalo/toodo/toodo_test.sqlite
 
 production:
-  dialect: "sqlite3"
-  database: {{env "GOPATH" }}/src/github.com/gobuffalo/toodo/toodo_production.sqlite
+  url: {{envOr "DATABASE_URL" "postgres://postgres:postgres@127.0.0.1:5432/toodo_production?sslmode=disable"}}

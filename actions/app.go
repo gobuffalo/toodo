@@ -22,13 +22,15 @@ func App() *buffalo.App {
 			Env:         ENV,
 			SessionName: "_toodo_session",
 		})
+		if ENV == "development" {
+			app.Use(middleware.ParameterLogger)
+		}
 
 		app.Use(middleware.PopTransaction(models.DB))
 
 		app.ServeFiles("/assets", packr.NewBox("../public/assets"))
 
-		var todoResource buffalo.Resource
-		todoResource = TodosResource{&buffalo.BaseResource{}}
+		todoResource := TodosResource{&buffalo.BaseResource{}}
 		app.Resource("/todos", todoResource)
 
 		app.GET("/", todoResource.List)
