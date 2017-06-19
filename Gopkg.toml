@@ -1,0 +1,36 @@
+
+[[dependencies]]
+  branch = "development"
+  name = "github.com/gobuffalo/buffalo"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/gobuffalo/envy"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/gobuffalo/packr"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/gobuffalo/suite"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/markbates/going"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/markbates/grift"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/markbates/pop"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/markbates/validate"
+
+[[dependencies]]
+  branch = "master"
+  name = "github.com/satori/go.uuid"
