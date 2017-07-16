@@ -56,7 +56,7 @@ v3.11.3
 In the `grifts/seed.go` file is a `seed` task that will clear out any existing todos in the database and insert a new todo.
 
 ```text
-$ buffalo task seed
+$ buffalo task db:seed
 ```
 
 # Run The Tests
