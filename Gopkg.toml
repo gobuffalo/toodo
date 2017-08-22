@@ -23,23 +23,31 @@
 
 [[constraint]]
   name = "github.com/gobuffalo/buffalo"
-  version = "0.9.1"
+  version = "0.9.3"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/gobuffalo/envy"
+  version = "1.0.0"
 
 [[constraint]]
-  branch = "master"
   name = "github.com/gobuffalo/packr"
+  version = "1.0.0"
 
 [[constraint]]
   branch = "master"
   name = "github.com/gobuffalo/suite"
 
 [[constraint]]
+  branch = "master"
+  name = "github.com/markbates/going"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/markbates/grift"
+
+[[constraint]]
   name = "github.com/markbates/pop"
-  version = "3.25.3"
+  version = "3.31.0"
 
 [[constraint]]
   branch = "master"
