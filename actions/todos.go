@@ -64,5 +64,5 @@ func (v TodosResource) Update(c buffalo.Context) error {
 	}
 
 	c.Set("todo", t)
-	return c.Render(200, r.Template("text/javascript", "todos/update.js"))
+	return c.Render(200, r.JavaScript("todos/update.js"))
 }
