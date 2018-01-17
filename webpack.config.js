@@ -1,57 +1,72 @@
 var webpack = require("webpack");
 var CopyWebpackPlugin = require("copy-webpack-plugin");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var ManifestPlugin = require("webpack-manifest-plugin");
+var PROD = process.env.NODE_ENV || "development";
+var CleanWebpackPlugin = require("clean-webpack-plugin");
 
 module.exports = {
-  entry: [
-    "./assets/js/application.js",
-    "./assets/css/application.scss",
-    "./node_modules/jquery-ujs/src/rails.js"
-  ],
+  entry: {
+    application: [
+      "./assets/js/application.js",
+      "./node_modules/jquery-ujs/src/rails.js",
+      "./assets/css/application.scss"
+    ]
+  },
   output: {
-    filename: "application.js",
-    path: __dirname + "/public/assets"
+    filename: "[name].[hash].js",
+    path: `${__dirname}/public/assets`
   },
   plugins: [
+    new CleanWebpackPlugin([
+      "public/assets"
+    ], {
+      verbose: false,
+      watch: true
+    }),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery"
     }),
-    new ExtractTextPlugin("application.css"),
+    new ExtractTextPlugin("[name].[hash].css"),
     new CopyWebpackPlugin(
-      [
-        {
-          from: "./assets",
-          to: ""
-        }
-      ],
-      {
-        ignore: ["css/*", "js/*"]
+      [{
+        from: "./assets",
+        to: ""
+      }], {
+        copyUnmodified: true,
+        ignore: ["css/**", "js/**"]
       }
-    )
+    ),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true,
+      debug: false
+    }),
+    new ManifestPlugin({
+      fileName: "manifest.json"
+    })
   ],
   module: {
-    rules: [
-      {
-        test: /\.jsx?$/,
-        loader: "babel-loader",
-        options: {
-          presets: ["env"]
-        },
-        exclude: /node_modules/
-      },
+    rules: [{
+      test: /\.jsx?$/,
+      loader: "babel-loader",
+      exclude: /node_modules/
+    },
       {
         test: /\.scss$/,
         use: ExtractTextPlugin.extract({
           fallback: "style-loader",
-          use: [
-            {
-              loader: "css-loader",
-              options: { sourceMap: true }
-            },
+          use: [{
+            loader: "css-loader",
+            options: {
+              sourceMap: true
+            }
+          },
             {
               loader: "sass-loader",
-              options: { sourceMap: true }
+              options: {
+                sourceMap: true
+              }
             }
           ]
         })
@@ -83,3 +98,19 @@ module.exports = {
     ]
   }
 };
+
+if (PROD != "development") {
+  module.exports.plugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      beautify: false,
+      mangle: {
+        screw_ie8: true,
+        keep_fnames: true
+      },
+      compress: {
+        screw_ie8: true
+      },
+      comments: false
+    })
+  );
+}

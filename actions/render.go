@@ -5,14 +5,20 @@ import (
 	"github.com/gobuffalo/packr"
 )
 
-var assetsBox = packr.NewBox("../public/assets")
 var r *render.Engine
+var assetsBox = packr.NewBox("../public")
 
 func init() {
 	r = render.New(render.Options{
-		HTMLLayout:   "application.html",
+		// HTML layout to be used for all HTML requests:
+		HTMLLayout:       "application.html",
+		JavaScriptLayout: "application.js",
+
+		// Box containing all of the templates:
 		TemplatesBox: packr.NewBox("../templates"),
 		AssetsBox:    assetsBox,
-		Helpers:      render.Helpers{},
+
+		// Add template helpers here:
+		Helpers: render.Helpers{},
 	})
 }

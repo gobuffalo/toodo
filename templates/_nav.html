@@ -1,0 +1,23 @@
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/">
+        Toodo
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <%= if (current_user) { %>
+        <li>
+          <a href="<%= signoutPath() %>" data-method="DELETE"> Sign Out </a>
+        </li>
+      <% } else { %>
+        <li>
+          <a href="<%= signinPath() %>"> Sign In </a>
+        </li>
+        <li>
+          <a href="<%= newUsersPath() %>"> Register </a>
+        </li>
+      <% } %>
+    </ul>
+  </div>
+</nav>

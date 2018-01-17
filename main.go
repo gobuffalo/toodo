@@ -7,5 +7,8 @@ import (
 )
 
 func main() {
-	log.Fatal(actions.App().Serve())
+	app := actions.App()
+	if err := app.Serve(); err != nil {
+		log.Fatal(err)
+	}
 }

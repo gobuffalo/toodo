@@ -1,10 +1,9 @@
-package actions_test
+package actions
 
 import (
 	"testing"
 
 	"github.com/gobuffalo/suite"
-	"github.com/gobuffalo/toodo/actions"
 )
 
 type ActionSuite struct {
@@ -12,6 +11,6 @@ type ActionSuite struct {
 }
 
 func Test_ActionSuite(t *testing.T) {
-	as := &ActionSuite{suite.NewAction(actions.App())}
+	as := &ActionSuite{suite.NewAction(App())}
 	suite.Run(t, as)
 }

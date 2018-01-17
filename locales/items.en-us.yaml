@@ -1,0 +1,6 @@
+- id: "item.created.success"
+  translation: "Item was successfully created."
+- id: "item.updated.success"
+  translation: "Item was successfully updated."
+- id: "item.destroyed.success"
+  translation: "Item was successfully destroyed."

@@ -1,0 +1,11 @@
+<div class="page-header">
+  <h1 class="<%= if (item.Completed) {return "completed"} %>"><%= item.Title %></h1>
+</div>
+
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= itemsPath() %>" class="btn btn-info">Back to all Items</a></li>
+  <li><a href="<%= editItemPath({ item_id: item.ID })%>" class="btn btn-warning">Edit</a></li>
+  <li><a href="<%= itemPath({ item_id: item.ID })%>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+</ul>
+
+<%= markdown(item.Body.String) %>

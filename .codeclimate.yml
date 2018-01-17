@@ -18,4 +18,3 @@ exclude_paths:
 ratings:
   paths:
     - "**.go"
-

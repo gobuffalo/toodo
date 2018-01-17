@@ -1,0 +1,2 @@
+<%= yield %>
+watchCheckboxes();

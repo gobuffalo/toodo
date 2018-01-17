@@ -6,8 +6,9 @@ bin/
 tmp/
 node_modules/
 .sass-cache/
-rice-box.go
+*-packr.go
 public/assets/
 toodo
-schema.sql
-*sqlite*
+.vscode/
+.grifter/
+.env
