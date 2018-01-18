@@ -25,20 +25,23 @@ type ItemsResource struct {
 	buffalo.Resource
 }
 
+func (v ItemsResource) scope(c buffalo.Context) *pop.Query {
+	tx := c.Value("tx").(*pop.Connection)
+	cu, ok := c.Value("current_user").(*models.User)
+	if !ok {
+		return tx.Q()
+	}
+	return tx.BelongsTo(cu)
+}
+
 // List gets all Items. This function is mapped to the path
 // GET /items
 func (v ItemsResource) List(c buffalo.Context) error {
-	// Get the DB connection from the context
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
-	}
-
 	items := &models.Items{}
 
 	// Paginate results. Params "page" and "per_page" control pagination.
 	// Default values are "page=1" and "per_page=20".
-	q := tx.PaginateFromParams(c.Params())
+	q := v.scope(c).PaginateFromParams(c.Params())
 	q = q.Order("created_at desc")
 
 	// Retrieve all Items from the DB
@@ -58,17 +61,11 @@ func (v ItemsResource) List(c buffalo.Context) error {
 // Show gets the data for one Item. This function is mapped to
 // the path GET /items/{item_id}
 func (v ItemsResource) Show(c buffalo.Context) error {
-	// Get the DB connection from the context
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
-	}
-
 	// Allocate an empty Item
 	item := &models.Item{}
 
 	// To find the Item the parameter item_id is used.
-	if err := tx.Find(item, c.Param("item_id")); err != nil {
+	if err := v.scope(c).Find(item, c.Param("item_id")); err != nil {
 		return c.Error(404, err)
 	}
 
@@ -138,16 +135,10 @@ func (v ItemsResource) Create(c buffalo.Context) error {
 // Edit renders a edit form for a Item. This function is
 // mapped to the path GET /items/{item_id}/edit
 func (v ItemsResource) Edit(c buffalo.Context) error {
-	// Get the DB connection from the context
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
-	}
-
 	// Allocate an empty Item
 	item := &models.Item{}
 
-	if err := tx.Find(item, c.Param("item_id")); err != nil {
+	if err := v.scope(c).Find(item, c.Param("item_id")); err != nil {
 		return c.Error(404, err)
 	}
 
@@ -159,22 +150,22 @@ func (v ItemsResource) Edit(c buffalo.Context) error {
 // Update changes a Item in the DB. This function is mapped to
 // the path PUT /items/{item_id}
 func (v ItemsResource) Update(c buffalo.Context) error {
-	// Get the DB connection from the context
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
-	}
-
 	// Allocate an empty Item
 	item := &models.Item{}
 
-	if err := tx.Find(item, c.Param("item_id")); err != nil {
+	if err := v.scope(c).Find(item, c.Param("item_id")); err != nil {
 		return c.Error(404, err)
 	}
 
 	// Bind Item to the html form elements
 	if err := c.Bind(item); err != nil {
 		return errors.WithStack(err)
+	}
+
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return errors.WithStack(errors.New("no transaction found"))
 	}
 
 	verrs, err := tx.ValidateAndUpdate(item)
@@ -217,18 +208,18 @@ func (v ItemsResource) Update(c buffalo.Context) error {
 // Destroy deletes a Item from the DB. This function is mapped
 // to the path DELETE /items/{item_id}
 func (v ItemsResource) Destroy(c buffalo.Context) error {
-	// Get the DB connection from the context
-	tx, ok := c.Value("tx").(*pop.Connection)
-	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
-	}
-
 	// Allocate an empty Item
 	item := &models.Item{}
 
 	// To find the Item the parameter item_id is used.
-	if err := tx.Find(item, c.Param("item_id")); err != nil {
+	if err := v.scope(c).Find(item, c.Param("item_id")); err != nil {
 		return c.Error(404, err)
+	}
+
+	// Get the DB connection from the context
+	tx, ok := c.Value("tx").(*pop.Connection)
+	if !ok {
+		return errors.WithStack(errors.New("no transaction found"))
 	}
 
 	if err := tx.Destroy(item); err != nil {
