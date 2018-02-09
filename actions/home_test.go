@@ -20,8 +20,8 @@ func (as *ActionSuite) Test_HomeHandler_LoggedIn() {
 	as.Session.Set("current_user_id", u.ID)
 
 	res := as.HTML("/").Get()
-	as.Equal(200, res.Code)
-	as.Contains(res.Body.String(), "Sign Out")
+	as.Equal(302, res.Code)
+	as.Equal("/items", res.Location())
 
 	as.Session.Clear()
 	res = as.HTML("/").Get()
