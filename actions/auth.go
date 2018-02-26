@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/toodo/models"
-	"github.com/markbates/pop"
-	"github.com/markbates/validate"
+	"github.com/gobuffalo/validate"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )

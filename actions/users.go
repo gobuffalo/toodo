@@ -2,8 +2,8 @@ package actions
 
 import (
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/toodo/models"
-	"github.com/markbates/pop"
 	"github.com/pkg/errors"
 )
 

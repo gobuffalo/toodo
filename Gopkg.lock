@@ -3,9 +3,9 @@
 
 [[projects]]
   branch = "master"
-  name = "dmitri.shuralyov.com/kebabcase"
+  name = "dmitri.shuralyov.com/text/kebabcase"
   packages = ["."]
-  revision = "bf160e40a7918fbe9dc3cc841a023d87242bd2eb"
+  revision = "40e40b42552a9cb37d6e98f4ad31f63ae53ea43a"
 
 [[projects]]
   name = "github.com/ajg/form"
@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/cockroachdb/cockroach-go"
   packages = ["crdb"]
-  revision = "0d8b4682f140f0fe486ef7e3d2f70665f3066906"
+  revision = "59c0560478b705bf9bd12f9252224a0fad7c87df"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -26,10 +26,10 @@
   version = "v1.1.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/daviddengcn/go-colortext"
   packages = ["."]
   revision = "17e75f6184bc9e727756cd0d82e0af58b1fc7191"
+  version = "1.0.0"
 
 [[projects]]
   branch = "master"
@@ -40,8 +40,8 @@
 [[projects]]
   name = "github.com/fatih/color"
   packages = ["."]
-  revision = "570b54cabe6b8eb0bc2dfce68d964677d63b5260"
-  version = "v1.5.0"
+  revision = "507f6050b8568533fb3f5504de8e5205fa62a114"
+  version = "v1.6.0"
 
 [[projects]]
   name = "github.com/fatih/structs"
@@ -74,19 +74,19 @@
     "render",
     "worker"
   ]
-  revision = "136109a094adf655dcac5479eae590f8a11c7765"
+  revision = "739c787f7e9698852ee1ada24227c6f9519f9fba"
 
 [[projects]]
   name = "github.com/gobuffalo/envy"
   packages = ["."]
-  revision = "e613c80275b86293880eddeb27417c9a7c670ff3"
-  version = "v1.3.0"
+  revision = "50fabbbaf1e65fc9b739f37a00590c396485d84d"
+  version = "v1.4.0"
 
 [[projects]]
   name = "github.com/gobuffalo/packr"
   packages = ["."]
-  revision = "e75b84227ebcc6713f8bfd1a4d154a1c005ded1c"
-  version = "v1.10.1"
+  revision = "6434a292ac52e6964adebfdce3f9ce6d9f16be01"
+  version = "v1.10.4"
 
 [[projects]]
   name = "github.com/gobuffalo/plush"
@@ -97,14 +97,27 @@
     "parser",
     "token"
   ]
-  revision = "6d09d4974db8d29de785acabe7dda076ecbf4ded"
-  version = "v3.6.7"
+  revision = "a3df688902c0ccd9fa712ed5a1da6b78e7efab0d"
+  version = "v3.6.12"
 
 [[projects]]
-  branch = "master"
+  name = "github.com/gobuffalo/pop"
+  packages = [
+    ".",
+    "associations",
+    "columns",
+    "fizz",
+    "fizz/translators",
+    "nulls"
+  ]
+  revision = "bee83abd4cccaed4e79182d342804d864b6829e6"
+  version = "v4.0.0"
+
+[[projects]]
   name = "github.com/gobuffalo/suite"
   packages = ["."]
-  revision = "985d7acf9588fa61c095bc5d357483e00e511ea3"
+  revision = "1390f9a650cdb0e23499c23c50e75bf98a21f728"
+  version = "v2.0.0"
 
 [[projects]]
   name = "github.com/gobuffalo/tags"
@@ -113,8 +126,23 @@
     "form",
     "form/bootstrap"
   ]
-  revision = "fd130d3e089cc2ae7285f7b4f3e45fd3f1aa3482"
-  version = "v1.9.0"
+  revision = "ab52126649ee51d858d9525f60bc1618592433b0"
+  version = "v2.0.0"
+
+[[projects]]
+  name = "github.com/gobuffalo/uuid"
+  packages = ["."]
+  revision = "3a9fb6c5c481d4886f1e9323c61ad743fb955860"
+  version = "v2.0.0"
+
+[[projects]]
+  name = "github.com/gobuffalo/validate"
+  packages = [
+    ".",
+    "validators"
+  ]
+  revision = "42d8db6e06e617cdedcc7a849d6690a2cb5a8d28"
+  version = "v2.0.0"
 
 [[projects]]
   branch = "master"
@@ -140,8 +168,8 @@
 [[projects]]
   name = "github.com/gorilla/securecookie"
   packages = ["."]
-  revision = "667fe4e3466a040b780561fe9b51a83a3753eefc"
-  version = "v1.1"
+  revision = "e59506cc896acb7f7bf732d4fdf5e25f7ccd8983"
+  version = "v1.1.1"
 
 [[projects]]
   name = "github.com/gorilla/sessions"
@@ -162,7 +190,7 @@
     ".",
     "reflectx"
   ]
-  revision = "de8647470aafe4854c976707c431dbe1eb2822c6"
+  revision = "05cef0741ade10ca668982355b3f3f0bcf0ff0a8"
 
 [[projects]]
   name = "github.com/joho/godotenv"
@@ -177,7 +205,7 @@
     ".",
     "oid"
   ]
-  revision = "83612a56d3dd153a94a629cd64925371c9adad78"
+  revision = "88edab0803230a3898347e77b474f8c1820a1f20"
 
 [[projects]]
   branch = "master"
@@ -205,19 +233,7 @@
   branch = "master"
   name = "github.com/markbates/inflect"
   packages = ["."]
-  revision = "a12c3aec81a6a938bf584a4bac567afed9256586"
-
-[[projects]]
-  name = "github.com/markbates/pop"
-  packages = [
-    ".",
-    "columns",
-    "fizz",
-    "fizz/translators",
-    "nulls"
-  ]
-  revision = "eeb02e2bb55bc6f9f64fefd3f611dc9b69796600"
-  version = "3.51.0"
+  revision = "80fa1ea41b0dc859816314ab0b85f07a6bc57923"
 
 [[projects]]
   name = "github.com/markbates/refresh"
@@ -236,18 +252,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/markbates/validate"
-  packages = [
-    ".",
-    "validators"
-  ]
-  revision = "cd8cc34c703420d6b084fbbfd5085e8e71c5b830"
-
-[[projects]]
-  branch = "master"
   name = "github.com/markbates/willie"
   packages = ["."]
-  revision = "581acce3ce06dad9fab48638c21adadd0633631f"
+  revision = "1eede1f49c9648490dcabd7828c2f39b560e7040"
 
 [[projects]]
   branch = "master"
@@ -282,7 +289,7 @@
     "parser",
     "vm"
   ]
-  revision = "2b087a66e312c02195bcf188647f44321cbbf2aa"
+  revision = "d5441ca3f0c7e071a9ede864f9db2cc652690f42"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -334,8 +341,8 @@
 [[projects]]
   name = "github.com/pelletier/go-toml"
   packages = ["."]
-  revision = "16398bac157da96aa88f98a2df640c7f32af1da2"
-  version = "v1.0.1"
+  revision = "acdc4509485b587f5e675510c4f2c63e90ff68a8"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -350,15 +357,10 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/russross/blackfriday"
   packages = ["."]
-  revision = "6d1ef893fcb01b4f50cb6e57ed7df3e2e627b6b2"
-
-[[projects]]
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  revision = "36e9d2ebbde5e3f13ab2e25625fd453271d6522e"
+  revision = "55d61fa8aa702f59229e6cff85793c22e580eaf5"
+  version = "v1.5.1"
 
 [[projects]]
   branch = "master"
@@ -367,10 +369,10 @@
   revision = "a683aaf2d516deecd70cad0c72e3ca773ecfcef0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/sergi/go-diff"
   packages = ["diffmatchpatch"]
   revision = "1744e2970ca51c86172c8190fadad617561ed6e7"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -387,7 +389,7 @@
     "reflectfind",
     "reflectsource"
   ]
-  revision = "004faa6b0118cf52635363b72b51cdcc297800a2"
+  revision = "364c5ae8518b51f5fda954762864d6f4d5c30c89"
 
 [[projects]]
   branch = "master"
@@ -417,7 +419,7 @@
   branch = "master"
   name = "github.com/shurcooL/octiconssvg"
   packages = ["."]
-  revision = "38b02129bb6460858e11f90798a3832da1e502bd"
+  revision = "91d14858bf8188ba5143d67a3a677ea559000b0a"
 
 [[projects]]
   branch = "master"
@@ -450,14 +452,14 @@
     "require",
     "suite"
   ]
-  revision = "b91bfb9ebec76498946beb6af7c0230c7cc7ba6c"
-  version = "v1.2.0"
+  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
+  version = "v1.2.1"
 
 [[projects]]
   branch = "master"
   name = "github.com/unrolled/secure"
   packages = ["."]
-  revision = "d6ff8660e1a61e887970a917ee2b9be0cfad6d40"
+  revision = "09c600e6d88476139828e3722c13c8553699adb0"
 
 [[projects]]
   branch = "master"
@@ -467,7 +469,7 @@
     "blowfish",
     "ssh/terminal"
   ]
-  revision = "13931e22f9e72ea58bb73048bc752b48c6d4d4ac"
+  revision = "beaf6a35706e5032ae4c3fcf342c663c069f44d2"
 
 [[projects]]
   branch = "master"
@@ -477,7 +479,7 @@
     "html",
     "html/atom"
   ]
-  revision = "5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec"
+  revision = "cbe0f9307d0156177f9dd5dc85da1a31abc5f2fb"
 
 [[projects]]
   branch = "master"
@@ -492,17 +494,17 @@
     "unix",
     "windows"
   ]
-  revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
+  revision = "f6cff0780e542efa0c8e864dc8fa522808f6a598"
 
 [[projects]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+  revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
+  version = "v2.1.1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1e4ea4ba8586e2b4a8596cc7d6bcd2667ffae54a0653994a915fd84f25205951"
+  inputs-digest = "25f61fcb66828e6ddd57ae37cd40528dddc98b2f3a6a44c8bea8527a7ddf5ff6"
   solver-name = "gps-cdcl"
   solver-version = 1

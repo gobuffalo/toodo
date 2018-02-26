@@ -1,10 +1,10 @@
 package grifts
 
 import (
+	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/pop/nulls"
 	"github.com/gobuffalo/toodo/models"
 	"github.com/markbates/grift/grift"
-	"github.com/markbates/pop"
-	"github.com/markbates/pop/nulls"
 	"github.com/pkg/errors"
 )
 
