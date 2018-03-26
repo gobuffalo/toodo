@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"database/sql"
+
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/toodo/models"
@@ -47,6 +49,10 @@ func SetCurrentUser(next buffalo.Handler) buffalo.Handler {
 			tx := c.Value("tx").(*pop.Connection)
 			err := tx.Find(u, uid)
 			if err != nil {
+				c.Session().Clear()
+				if errors.Cause(err) == sql.ErrNoRows {
+					return c.Redirect(302, "/")
+				}
 				return errors.WithStack(err)
 			}
 			c.Set("current_user", u)
