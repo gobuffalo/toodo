@@ -3,7 +3,7 @@
 </ul>
 
 <ul class="list-group">
-  <%= for (item) in items { return partial("items/li.html") } %>
+  <%= for (item) in items { return partial("items/li.html", {item: item}) } %>
 </ul>
 
 <div class="text-center">

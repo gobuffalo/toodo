@@ -1,5 +1,5 @@
 require("expose-loader?$!expose-loader?jQuery!jquery");
-require("bootstrap-sass/assets/javascripts/bootstrap.js");
+require("bootstrap/dist/js/bootstrap.bundle.js");
 
 window.watchCheckboxes = function() {
   $(".item-form input[type=checkbox]").on("change", (e) => {

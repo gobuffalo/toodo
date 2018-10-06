@@ -1,8 +1,0 @@
-[[constraint]]
-  name = "github.com/gobuffalo/buffalo"
-  version = "v0.11.0"
-
-[prune]
-  go-tests = true
-  unused-packages = true
-
