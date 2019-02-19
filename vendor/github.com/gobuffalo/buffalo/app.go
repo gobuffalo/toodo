@@ -16,15 +16,20 @@ import (
 type App struct {
 	Options
 	// Middleware returns the current MiddlewareStack for the App/Group.
-	Middleware      *MiddlewareStack `json:"-"`
-	ErrorHandlers   ErrorHandlers    `json:"-"`
-	ErrorMiddleware MiddlewareFunc   `json:"-"`
-	router          *mux.Router
-	moot            *sync.RWMutex
-	routes          RouteList
-	root            *App
-	children        []*App
-	filepaths       []string
+	Middleware    *MiddlewareStack `json:"-"`
+	ErrorHandlers ErrorHandlers    `json:"-"`
+	router        *mux.Router
+	moot          *sync.RWMutex
+	routes        RouteList
+	root          *App
+	children      []*App
+	filepaths     []string
+}
+
+// Muxer returns the underlying mux router to allow
+// for advance configurations
+func (a *App) Muxer() *mux.Router {
+	return a.router
 }
 
 // New returns a new instance of App and adds some sane, and useful, defaults.
@@ -46,9 +51,6 @@ func New(opts Options) *App {
 	}
 
 	dem := a.defaultErrorMiddleware
-	if a.ErrorMiddleware != nil {
-		dem = a.ErrorMiddleware
-	}
 	a.Middleware = newMiddlewareStack(dem)
 
 	notFoundHandler := func(errorf string, code int) http.HandlerFunc {

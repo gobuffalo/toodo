@@ -1,13 +1,16 @@
 package translators
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 
+	"github.com/blang/semver"
 	"github.com/gobuffalo/fizz"
-	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
+
+var mysql57Version = semver.MustParse("5.7.0")
 
 type mysqlTableInfo struct {
 	Field   string      `db:"Field"`
@@ -39,68 +42,71 @@ type mysqlSchema struct {
 	Schema
 }
 
-func (p *mysqlSchema) Version() (string, error) {
-	var version string
+func (p *mysqlSchema) Version() (*semver.Version, error) {
+	var version *semver.Version
 	var err error
 
-	p.db, err = sqlx.Open("mysql", p.URL)
+	db, err := sql.Open("mysql", p.URL)
 	if err != nil {
-		return version, err
+		return version, errors.WithMessage(err, "could not fetch MySQL version")
 	}
-	defer p.db.Close()
+	defer db.Close()
 
-	res, err := p.db.Queryx("select VERSION()")
+	res, err := db.Query("SELECT VERSION()")
 	if err != nil {
-		return version, err
+		return version, errors.WithMessage(err, "could not fetch MySQL version")
 	}
+	defer res.Close()
 
 	for res.Next() {
 		err = res.Scan(&version)
-		return version, err
+		return version, errors.WithMessage(err, "could not fetch MySQL version")
 	}
-	return "", errors.New("could not locate MySQL version")
+	return version, errors.New("could not fetch MySQL version")
 }
 
 func (p *mysqlSchema) Build() error {
-	var err error
-	p.db, err = sqlx.Open("mysql", p.URL)
+	db, err := sql.Open("mysql", p.URL)
 	if err != nil {
-		return err
+		return errors.WithMessage(err, "unable to retrieve schema")
 	}
-	defer p.db.Close()
+	defer db.Close()
 
-	res, err := p.db.Queryx(fmt.Sprintf("select TABLE_NAME as name from information_schema.TABLES where TABLE_SCHEMA = '%s'", p.Name))
+	res, err := db.Query(fmt.Sprintf("select TABLE_NAME as name from information_schema.TABLES where TABLE_SCHEMA = '%s'", p.Name))
 	if err != nil {
-		return err
+		return errors.WithMessage(err, "unable to retrieve schema")
 	}
+	defer res.Close()
+
 	for res.Next() {
 		table := &fizz.Table{
 			Columns: []fizz.Column{},
 			Indexes: []fizz.Index{},
 		}
-		err = res.StructScan(table)
+		err = res.Scan(&table.Name)
 		if err != nil {
-			return err
+			return errors.WithMessage(err, "unable to retrieve schema")
 		}
-		err = p.buildTableData(table)
+		err = p.buildTableData(table, db)
 		if err != nil {
-			return err
+			return errors.WithMessage(err, "unable to retrieve schema")
 		}
 	}
 	return nil
 }
 
-func (p *mysqlSchema) buildTableData(table *fizz.Table) error {
-	prag := fmt.Sprintf("describe %s", table.Name)
+func (p *mysqlSchema) buildTableData(table *fizz.Table, db *sql.DB) error {
+	prag := fmt.Sprintf("SELECT COLUMN_NAME AS `Field`, COLUMN_TYPE AS `Type`, IS_NULLABLE AS `Null`, COLUMN_KEY AS `Key`, COLUMN_DEFAULT AS `Default`, EXTRA AS `Extra` FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%s';", table.Name)
 
-	res, err := p.db.Queryx(prag)
+	res, err := db.Query(prag)
 	if err != nil {
-		return nil
+		return err
 	}
+	defer res.Close()
 
 	for res.Next() {
 		ti := mysqlTableInfo{}
-		err = res.StructScan(&ti)
+		err = res.Scan(&ti.Field, &ti.Type, &ti.Null, &ti.Key, &ti.Default, &ti.Extra)
 		if err != nil {
 			return err
 		}

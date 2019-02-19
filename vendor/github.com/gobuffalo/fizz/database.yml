@@ -4,7 +4,7 @@ mysql:
   host: {{ envOr "MYSQL_HOST" "127.0.0.1"  }}
   port: {{ envOr "MYSQL_PORT" "3306"  }}
   user: {{ envOr "MYSQL_USER"  "root"  }}
-  password: {{ envOr "MYSQL_PASSWORD"  "root"  }}
+  password: {{ envOr "MYSQL_PASSWORD" "root"  }}
 
 mysql_travis:
   dialect: "mysql"
@@ -26,6 +26,14 @@ cockroach:
   port: {{ envOr "COCKROACH_PORT" "26257"  }}
   user: {{ envOr "COCKROACH_USER" "root"  }}
   password: {{ envOr "COCKROACH_PASSWORD" ""  }}
+
+sqlserver:
+  dialect: "sqlserver"
+  database: "pop_test"
+  host: {{ envOr "MSSQLSERVER_HOST" "127.0.0.1"  }}
+  port: {{ envOr "MSSQLSERVER_PORT" "1433"  }}
+  user: {{ envOr "MSSQLSERVER_USER" "sa"  }}
+  password: {{ envOr "MSSQLSERVER_PASSWORD" "Tt@12345678"  }}
 
 sqlite:
   dialect: "sqlite3"

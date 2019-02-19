@@ -122,7 +122,7 @@ Often it is useful to load a series of data into the database at the start of th
 
 ### Usage
 
-First you need to setup your test suite to use fixtures. You can do this by using `suite.NewActionWithFixtures` or `suite.NewModelWithFixtures` methods to create new test suites that take a `packr.Box` pointing to where the files for this suite live.
+First you need to setup your test suite to use fixtures. You can do this by using `suite.NewActionWithFixtures` or `suite.NewModelWithFixtures` methods to create new test suites that take a `packd.Box` pointing to where the files for this suite live.
 
 ```go
 package actions

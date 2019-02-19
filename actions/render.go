@@ -2,7 +2,7 @@ package actions
 
 import (
 	"github.com/gobuffalo/buffalo/render"
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 )
 
 var r *render.Engine
@@ -15,7 +15,7 @@ func init() {
 		JavaScriptLayout: "application.js",
 
 		// Box containing all of the templates:
-		TemplatesBox: packr.NewBox("../templates"),
+		TemplatesBox: packr.New("../templates", "../templates"),
 		AssetsBox:    assetsBox,
 
 		// Add template helpers here:

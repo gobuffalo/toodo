@@ -26,6 +26,6 @@ generated/
 .vendor/
 bin/*
 gin-bin
-.gitcookies
+.idea/
 go.mod
 go.sum

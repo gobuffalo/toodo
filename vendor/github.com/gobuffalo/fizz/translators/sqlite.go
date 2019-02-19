@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/gobuffalo/fizz"
+	"github.com/pkg/errors"
 )
 
 type SQLite struct {
@@ -384,9 +383,16 @@ func (p *SQLite) colType(c fizz.Column) string {
 		return "DATETIME"
 	case "boolean", "date":
 		return "NUMERIC"
-	case "string":
+	case "string", "text":
 		return "TEXT"
-	case "blob":
+	case "int", "integer":
+		return "INTEGER"
+	case "float":
+		// precision and scale not supported here
+		return "REAL"
+	case "json":
+		return "TEXT"
+	case "blob", "[]byte":
 		return "BLOB"
 	default:
 		return c.ColType

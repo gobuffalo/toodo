@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/buffalo"
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packd"
 	"github.com/nicksnyder/go-i18n/i18n"
 	"github.com/nicksnyder/go-i18n/i18n/language"
 	"github.com/nicksnyder/go-i18n/i18n/translation"
@@ -26,7 +26,7 @@ type LanguageExtractorOptions map[string]interface{}
 // Translator for handling all your i18n needs.
 type Translator struct {
 	// Box - where are the files?
-	Box packr.Box
+	Box packd.Box
 	// DefaultLanguage - default is passed as a parameter on New.
 	DefaultLanguage string
 	// HelperName - name of the view helper. default is "t"
@@ -39,8 +39,8 @@ type Translator struct {
 
 // Load translations from the t.Box.
 func (t *Translator) Load() error {
-	return t.Box.Walk(func(path string, f packr.File) error {
-		b, err := t.Box.MustBytes(path)
+	return t.Box.Walk(func(path string, f packd.File) error {
+		b, err := t.Box.Find(path)
 		if err != nil {
 			return errors.Wrapf(err, "unable to read locale file %s", path)
 		}
@@ -66,7 +66,7 @@ func (t *Translator) AddTranslation(lang *language.Language, translations ...tra
 // New Translator. Requires a packr.Box that points to the location
 // of the translation files, as well as a default language. This will
 // also call t.Load() and load the translations from disk.
-func New(box packr.Box, language string) (*Translator, error) {
+func New(box packd.Box, language string) (*Translator, error) {
 	t := &Translator{
 		Box:             box,
 		DefaultLanguage: language,

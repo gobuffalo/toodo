@@ -4,12 +4,12 @@ import (
 	"context"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"syscall"
 
 	"github.com/gobuffalo/buffalo/servers"
 	"github.com/gobuffalo/events"
+	"github.com/gobuffalo/packd"
 	"github.com/markbates/refresh/refresh/web"
 	"github.com/markbates/sigtx"
 	"github.com/pkg/errors"
@@ -108,6 +108,13 @@ func (a *App) Stop(err error) error {
 }
 
 func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Body != nil {
+		// convert the request's body to a packd.File which can be read N times
+		f, err := packd.NewFile("", r.Body)
+		if err == nil {
+			r.Body = f
+		}
+	}
 	ws := &Response{
 		ResponseWriter: w,
 	}
@@ -155,9 +162,6 @@ func (a *App) processPreHandlers(res http.ResponseWriter, req *http.Request) boo
 }
 
 func (a *App) normalizePath(path string) string {
-	if filepath.Ext(path) != "" {
-		return path
-	}
 	if strings.HasSuffix(path, "/") {
 		return path
 	}

@@ -21,6 +21,7 @@ func AddPlural(suffix string, repl string) {
 }
 
 var singleToPlural = map[string]string{
+	"human":       "humans",
 	"matrix":      "matrices",
 	"vertix":      "vertices",
 	"index":       "indices",
@@ -64,6 +65,7 @@ var singleToPlural = map[string]string{
 	"beau":        "beaus",
 	"bison":       "bison",
 	"bureau":      "bureaus",
+	"campus":      "campuses",
 	"château":     "châteaux",
 	"codex":       "codices",
 	"concerto":    "concertos",
@@ -140,6 +142,7 @@ func init() {
 	}
 }
 func init() {
+	AddPlural("campus", "campuses")
 	AddPlural("man", "men")
 	AddPlural("tz", "tzes")
 	AddPlural("alias", "aliases")
@@ -165,7 +168,6 @@ func init() {
 	AddPlural("person", "people")
 	AddPlural("va", "vae")
 	AddPlural("leus", "li")
-	AddPlural("ld", "ldren")
 	AddPlural("oot", "eet")
 	AddPlural("oose", "eese")
 	AddPlural("box", "boxes")

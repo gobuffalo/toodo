@@ -34,26 +34,44 @@ func Transaction(db *pop.Connection) buffalo.MiddlewareFunc {
 		return func(c buffalo.Context) error {
 			// wrap all requests in a transaction and set the length
 			// of time doing things in the db to the log.
-			err := db.Transaction(func(tx *pop.Connection) error {
+			// ANY error returned by the tx function will cause the
+			// tx to be rolled back
+			couldBeDBorYourErr := db.Transaction(func(tx *pop.Connection) error {
+				// setup logging
 				start := tx.Elapsed
 				defer func() {
 					finished := tx.Elapsed
 					elapsed := time.Duration(finished - start)
 					c.LogField("db", elapsed)
 				}()
+
+				// add the transaction to the context
 				c.Set("tx", tx)
-				if err := h(c); err != nil {
-					return err
+
+				// call the next handler; if it errors stop and return the error
+				if yourError := h(c); yourError != nil {
+					return yourError
 				}
+
+				// check the response status code. if the code is NOT 200..399
+				// then it is considered "NOT SUCCESSFUL" and an error will be returned
 				if res, ok := c.Response().(*buffalo.Response); ok {
 					if res.Status < 200 || res.Status >= 400 {
 						return errNonSuccess
 					}
 				}
+
+				// as far was we can tell everything went well
 				return nil
 			})
-			if err != nil && errors.Cause(err) != errNonSuccess {
-				return err
+
+			// couldBeDBorYourErr could be one of possible values:
+			// * nil - everything went well, if so, return
+			// * yourError - an error returned from your application, middleware, etc...
+			// * a database error - this is returned if there were problems committing the transaction
+			// * a errNonSuccess - this is returned if the response status code is not between 200..399
+			if couldBeDBorYourErr != nil && errors.Cause(couldBeDBorYourErr) != errNonSuccess {
+				return couldBeDBorYourErr
 			}
 			return nil
 		}

@@ -5,12 +5,6 @@ github.com/gobuffalo/mapi does not try to reinvent the wheel! Instead, it uses t
 Thank you to the following **GIANTS**:
 
 
+* [github.com/gobuffalo/mapi](https://godoc.org/github.com/gobuffalo/mapi)
+
 * [github.com/pkg/errors](https://godoc.org/github.com/pkg/errors)
-
-* [github.com/stretchr/testify/assert](https://godoc.org/github.com/stretchr/testify/assert)
-
-* [github.com/stretchr/testify/require](https://godoc.org/github.com/stretchr/testify/require)
-
-* [github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew](https://godoc.org/github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew)
-
-* [github.com/stretchr/testify/vendor/github.com/pmezard/go-difflib/difflib](https://godoc.org/github.com/stretchr/testify/vendor/github.com/pmezard/go-difflib/difflib)

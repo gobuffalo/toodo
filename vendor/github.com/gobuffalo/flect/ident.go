@@ -1,7 +1,7 @@
 package flect
 
 import (
-	"regexp"
+	"encoding"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -27,8 +27,6 @@ func New(s string) Ident {
 
 	return i
 }
-
-var splitRx = regexp.MustCompile("[^\\p{L}]")
 
 func toParts(s string) []string {
 	parts := []string{}
@@ -65,7 +63,14 @@ func toParts(s string) []string {
 			prev = c
 			continue
 		}
+
 		if unicode.IsUpper(c) && !unicode.IsUpper(prev) {
+			parts = xappend(parts, x)
+			x = cs
+			prev = c
+			continue
+		}
+		if unicode.IsUpper(c) && baseAcronyms[strings.ToUpper(x)] {
 			parts = xappend(parts, x)
 			x = cs
 			prev = c
@@ -76,6 +81,7 @@ func toParts(s string) []string {
 			x += cs
 			continue
 		}
+
 		parts = xappend(parts, x)
 		x = ""
 		prev = c
@@ -83,4 +89,18 @@ func toParts(s string) []string {
 	parts = xappend(parts, x)
 
 	return parts
+}
+
+var _ encoding.TextUnmarshaler = &Ident{}
+var _ encoding.TextMarshaler = &Ident{}
+
+//UnmarshalText unmarshalls byte array into the Ident
+func (i *Ident) UnmarshalText(data []byte) error {
+	(*i) = New(string(data))
+	return nil
+}
+
+//MarshalText marshals Ident into byte array
+func (i Ident) MarshalText() ([]byte, error) {
+	return []byte(i.Original), nil
 }

@@ -1,7 +1,6 @@
 package genny
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"net/http"
@@ -10,16 +9,15 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gobuffalo/logger"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 // WetRunner will execute commands and write files
 // it is DESTRUCTIVE
 func WetRunner(ctx context.Context) *Runner {
 	r := DryRunner(ctx)
-	l := logrus.New()
-	l.Out = os.Stdout
+	l := logger.New(DefaultLogLvl)
 	r.Logger = l
 
 	r.ExecFn = wetExecFn
@@ -28,6 +26,16 @@ func WetRunner(ctx context.Context) *Runner {
 	}
 	r.DeleteFn = os.RemoveAll
 	r.RequestFn = wetRequestFn
+	r.ChdirFn = func(path string, fn func() error) error {
+		pwd, _ := os.Getwd()
+		defer os.Chdir(pwd)
+		os.MkdirAll(path, 0755)
+		if err := os.Chdir(path); err != nil {
+			return errors.WithStack(err)
+		}
+		return fn()
+	}
+	r.LookPathFn = exec.LookPath
 	return r
 }
 
@@ -64,6 +72,13 @@ func wetExecFn(cmd *exec.Cmd) error {
 }
 
 func wetFileFn(r *Runner, f File) (File, error) {
+	if d, ok := f.(Dir); ok {
+		if err := os.MkdirAll(d.Name(), d.Perm); err != nil {
+			return f, errors.WithStack(err)
+		}
+		return d, nil
+	}
+
 	name := f.Name()
 	if !filepath.IsAbs(name) {
 		name = filepath.Join(r.Root, name)
@@ -77,10 +92,8 @@ func wetFileFn(r *Runner, f File) (File, error) {
 		return f, errors.WithStack(err)
 	}
 	defer ff.Close()
-	bb := &bytes.Buffer{}
-	mw := io.MultiWriter(bb, ff)
-	if _, err := io.Copy(mw, f); err != nil {
+	if _, err := io.Copy(ff, f); err != nil {
 		return f, errors.WithStack(err)
 	}
-	return NewFile(f.Name(), bb), nil
+	return f, nil
 }

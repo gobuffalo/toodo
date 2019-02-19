@@ -1,10 +1,9 @@
 package events
 
 import (
-	"sort"
 	"strings"
-	"sync"
 
+	"github.com/markbates/safe"
 	"github.com/pkg/errors"
 )
 
@@ -20,8 +19,7 @@ type Manager interface {
 // DefaultManager implements a map backed Manager
 func DefaultManager() Manager {
 	return &manager{
-		moot:      &sync.RWMutex{},
-		listeners: map[string]Listener{},
+		listeners: listenerMap{},
 	}
 }
 
@@ -35,26 +33,19 @@ var boss Manager = DefaultManager()
 var _ listable = &manager{}
 
 type manager struct {
-	moot      *sync.RWMutex
-	listeners map[string]Listener
+	listeners listenerMap
 }
 
 func (m *manager) Listen(name string, l Listener) (DeleteFn, error) {
-	m.moot.RLock()
-	_, ok := m.listeners[name]
-	m.moot.RUnlock()
+	_, ok := m.listeners.Load(name)
 	if ok {
 		return nil, errors.Errorf("listener named %s is already listening", name)
 	}
 
-	m.moot.Lock()
-	m.listeners[name] = l
-	m.moot.Unlock()
+	m.listeners.Store(name, l)
 
 	df := func() {
-		m.moot.Lock()
-		delete(m.listeners, name)
-		m.moot.Unlock()
+		m.listeners.Delete(name)
 	}
 
 	return df, nil
@@ -64,11 +55,12 @@ func (m *manager) Emit(e Event) error {
 	if err := e.Validate(); err != nil {
 		return errors.WithStack(err)
 	}
+	e.Kind = strings.ToLower(e.Kind)
+	if e.IsError() && e.Error == nil {
+		e.Error = errors.New(e.Kind)
+	}
 	go func(e Event) {
-		m.moot.RLock()
-		defer m.moot.RUnlock()
-		e.Kind = strings.ToLower(e.Kind)
-		for _, l := range m.listeners {
+		m.listeners.Range(func(key string, l Listener) bool {
 			ex := Event{
 				Kind:    e.Kind,
 				Error:   e.Error,
@@ -78,19 +70,17 @@ func (m *manager) Emit(e Event) error {
 			for k, v := range e.Payload {
 				ex.Payload[k] = v
 			}
-			go l(ex)
-		}
+			go func(e Event, l Listener) {
+				safe.Run(func() {
+					l(e)
+				})
+			}(ex, l)
+			return true
+		})
 	}(e)
 	return nil
 }
 
 func (m *manager) List() ([]string, error) {
-	var names []string
-	m.moot.RLock()
-	for k := range m.listeners {
-		names = append(names, k)
-	}
-	m.moot.RUnlock()
-	sort.Strings(names)
-	return names, nil
+	return m.listeners.Keys(), nil
 }

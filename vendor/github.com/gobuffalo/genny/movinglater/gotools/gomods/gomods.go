@@ -1,32 +1,32 @@
 package gomods
 
 import (
-	"strings"
-
 	"github.com/gobuffalo/envy"
+	"github.com/markbates/safe"
 	"github.com/pkg/errors"
 )
 
 const ENV = "GO111MODULE"
 
 var ErrModsOff = errors.New("go mods are turned off")
-var modsOn = (strings.TrimSpace(envy.Get(ENV, "off")) == "on")
+
+func Force(b bool) {
+	if b {
+		envy.MustSet(ENV, "on")
+		return
+	}
+	envy.MustSet(ENV, "off")
+}
 
 func On() bool {
-	return modsOn
+	return envy.Mods()
 }
 
 func Disable(fn func() error) error {
-	gm := envy.Get("GO111MODULE", "off")
-	defer envy.MustSet("GO111MODULE", gm)
-	if err := envy.MustSet("GO111MODULE", "off"); err != nil {
-		return errors.WithStack(err)
-	}
+	oe := envy.Get(ENV, "off")
+	envy.MustSet(ENV, "off")
 
-	// this ensures the defer gets called after fn()
-	// doing return fn() would have it called before
-	if err := fn(); err != nil {
-		return errors.WithStack(err)
-	}
-	return nil
+	err := safe.RunE(fn)
+	envy.MustSet(ENV, oe)
+	return err
 }

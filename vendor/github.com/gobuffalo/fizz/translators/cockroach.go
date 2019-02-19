@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/gobuffalo/fizz"
+	"github.com/pkg/errors"
 )
 
 type Cockroach struct {
@@ -74,7 +73,7 @@ func (p *Cockroach) DropTable(t fizz.Table) (string, error) {
 
 func (p *Cockroach) RenameTable(t []fizz.Table) (string, error) {
 	if len(t) < 2 {
-		return "", errors.New("Not enough table names supplied!")
+		return "", errors.New("not enough table names supplied")
 	}
 	oldName := t[0].Name
 	newName := t[1].Name
@@ -377,6 +376,17 @@ func (p *Cockroach) colType(c fizz.Column) string {
 		return "timestamp"
 	case "blob":
 		return "BYTES"
+	case "float", "decimal":
+		if c.Options["precision"] != nil {
+			precision := c.Options["precision"]
+			if c.Options["scale"] != nil {
+				scale := c.Options["scale"]
+				return fmt.Sprintf("DECIMAL(%d,%d)", precision, scale)
+			}
+			return fmt.Sprintf("DECIMAL(%d)", precision)
+		}
+
+		return "DECIMAL"
 	default:
 		return c.ColType
 	}

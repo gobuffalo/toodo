@@ -12,6 +12,11 @@ var ErrNotFound = errors.New("not found")
 
 type Mapi map[string]interface{}
 
+func (mi Mapi) String() string {
+	b, _ := mi.MarshalJSON()
+	return string(b)
+}
+
 func (mi Mapi) Interface() interface{} {
 	return mi
 }

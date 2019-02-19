@@ -8,11 +8,15 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync"
 
+	"github.com/gobuffalo/events"
 	"github.com/markbates/oncer"
+	"github.com/markbates/safe"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 type RunFn func(r *Runner) error
@@ -26,8 +30,10 @@ type Runner struct {
 	ChdirFn    func(string, func() error) error                          // function to use when changing directories
 	DeleteFn   func(string) error                                        // function used to delete files/folders
 	RequestFn  func(*http.Request, *http.Client) (*http.Response, error) // function used to make http requests
+	LookPathFn func(string) (string, error)                              // function used to make exec.LookPath lookups
 	Root       string                                                    // the root of the write path
 	Disk       *Disk
+	steps      map[string]*Step
 	generators []*Generator
 	moot       *sync.RWMutex
 	results    Results
@@ -48,10 +54,18 @@ func (r *Runner) WithRun(fn RunFn) {
 }
 
 // With adds a Generator to the Runner
-func (r *Runner) With(g *Generator) {
+func (r *Runner) With(g *Generator) error {
 	r.moot.Lock()
-	defer r.moot.Unlock()
-	r.generators = append(r.generators, g)
+	step, ok := r.steps[g.StepName]
+	if !ok {
+		var err error
+		step, err = NewStep(g, len(r.steps))
+		if err != nil {
+			return errors.WithStack(err)
+		}
+	}
+	r.moot.Unlock()
+	return r.WithStep(g.StepName, step)
 }
 
 func (r *Runner) WithGroup(gg *Group) {
@@ -81,42 +95,108 @@ func (r *Runner) WithNew(g *Generator, err error) error {
 // Deprecated
 func (r *Runner) WithFn(fn func() (*Generator, error)) error {
 	oncer.Deprecate(5, "genny.Runner#WithFn", "")
-	g, err := fn()
-	if err != nil {
-		return errors.WithStack(err)
+	return safe.RunE(func() error {
+		g, err := fn()
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		r.With(g)
+		return nil
+	})
+}
+
+func (r *Runner) WithStep(name string, step *Step) error {
+	r.moot.Lock()
+	defer r.moot.Unlock()
+	if len(name) == 0 {
+		name = stepName()
 	}
-	r.With(g)
+	r.steps[name] = step
 	return nil
 }
 
-// Run all of the generators!
+func (r *Runner) Steps() []*Step {
+	r.moot.RLock()
+
+	var steps []*Step
+
+	for _, step := range r.steps {
+		steps = append(steps, step)
+	}
+
+	sort.Slice(steps, func(a, b int) bool {
+		return steps[a].index < steps[b].index
+	})
+
+	r.moot.RUnlock()
+	return steps
+}
+
+func (r *Runner) FindStep(name string) (*Step, error) {
+	r.moot.RLock()
+	s, ok := r.steps[name]
+	r.moot.RUnlock()
+	if !ok {
+		return nil, errors.Errorf("could not find step %s", name)
+	}
+	return s, nil
+}
+
+func (r *Runner) ReplaceStep(name string, s *Step) error {
+	os, err := r.FindStep(name)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	s.index = os.index
+	return r.WithStep(name, s)
+}
+
 func (r *Runner) Run() error {
-	r.moot.Lock()
-	defer r.moot.Unlock()
-	for _, g := range r.generators {
-		r.curGen = g
-		if g.Should != nil {
-			if !g.Should(r) {
-				continue
+	if f, ok := r.Logger.(io.Closer); ok {
+		defer f.Close()
+	}
+	steps := r.Steps()
+
+	payload := events.Payload{
+		"runner": r,
+		"steps":  steps,
+	}
+
+	events.EmitPayload(EvtStarted, payload)
+
+	for _, step := range steps {
+		if err := step.Run(r); err != nil {
+			payload = events.Payload{
+				"runner": r,
+				"step":   step,
 			}
-		}
-		for _, fn := range g.runners {
-			if err := fn(r); err != nil {
-				return errors.WithStack(err)
-			}
+			events.EmitError(EvtFinishedErr, err, payload)
+			return errors.WithStack(err)
 		}
 	}
+	events.EmitPayload(EvtFinished, payload)
+
 	return nil
 }
 
 // Exec can be used inside of Generators to run commands
 func (r *Runner) Exec(cmd *exec.Cmd) error {
 	r.results.Commands = append(r.results.Commands, cmd)
-	r.Logger.Infof(strings.Join(cmd.Args, " "))
+	r.Logger.Debug("Exec: ", strings.Join(cmd.Args, " "))
 	if r.ExecFn == nil {
 		return nil
 	}
-	return r.ExecFn(cmd)
+	return safe.RunE(func() error {
+		return r.ExecFn(cmd)
+	})
+}
+
+func (r *Runner) LookPath(s string) (string, error) {
+	r.Logger.Debug("LookPath: ", s)
+	if r.LookPathFn != nil {
+		return r.LookPathFn(s)
+	}
+	return s, nil
 }
 
 // File can be used inside of Generators to write files
@@ -132,14 +212,27 @@ func (r *Runner) File(f File) error {
 	if !filepath.IsAbs(name) {
 		name = filepath.Join(r.Root, name)
 	}
-	r.Logger.Infof(name)
+
+	_, isDir := f.(Dir)
+	if isDir {
+		r.Logger.Debug("Dir: ", name)
+	} else {
+		r.Logger.Debug("File: ", name)
+	}
+
 	if r.FileFn != nil {
-		var err error
-		if f, err = r.FileFn(f); err != nil {
+		err := safe.RunE(func() error {
+			var e error
+			if f, e = r.FileFn(f); e != nil {
+				return errors.WithStack(e)
+			}
+			if s, ok := f.(io.Seeker); ok {
+				s.Seek(0, 0)
+			}
+			return nil
+		})
+		if err != nil {
 			return errors.WithStack(err)
-		}
-		if s, ok := f.(io.Seeker); ok {
-			s.Seek(0, 0)
 		}
 	}
 	f = NewFile(f.Name(), f)
@@ -163,30 +256,28 @@ func (r *Runner) Chdir(path string, fn func() error) error {
 	if len(path) == 0 {
 		return fn()
 	}
-	r.Logger.Infof("cd: %s", path)
+	r.Logger.Debug("Chdir: ", path)
 
 	if r.ChdirFn != nil {
-		return r.ChdirFn(path, fn)
+		return safe.RunE(func() error {
+			return r.ChdirFn(path, fn)
+		})
 	}
 
-	pwd, _ := os.Getwd()
-	defer os.Chdir(pwd)
-	os.MkdirAll(path, 0755)
-	if err := os.Chdir(path); err != nil {
-		return errors.WithStack(err)
-	}
-	if err := fn(); err != nil {
+	if err := safe.RunE(fn); err != nil {
 		return errors.WithStack(err)
 	}
 	return nil
 }
 
 func (r *Runner) Delete(path string) error {
-	r.Logger.Infof("rm: %s", path)
+	r.Logger.Debug("Delete: ", path)
 
 	defer r.Disk.Remove(path)
 	if r.DeleteFn != nil {
-		return r.DeleteFn(path)
+		return safe.RunE(func() error {
+			return r.DeleteFn(path)
+		})
 	}
 	return nil
 }
@@ -197,8 +288,8 @@ func (r *Runner) Request(req *http.Request) (*http.Response, error) {
 
 func (r *Runner) RequestWithClient(req *http.Request, c *http.Client) (*http.Response, error) {
 	key := fmt.Sprintf("[%s] %s\n", strings.ToUpper(req.Method), req.URL)
-	r.Logger.Infof(key)
-	store := func(res *http.Response, err error) {
+	r.Logger.Debug("Request: ", key)
+	store := func(res *http.Response, err error) (*http.Response, error) {
 		r.moot.Lock()
 		r.results.Requests = append(r.results.Requests, RequestResult{
 			Request:  req,
@@ -207,12 +298,38 @@ func (r *Runner) RequestWithClient(req *http.Request, c *http.Client) (*http.Res
 			Error:    err,
 		})
 		r.moot.Unlock()
+		return res, err
 	}
 	if r.RequestFn == nil {
-		store(nil, nil)
-		return nil, nil
+		return store(nil, nil)
 	}
-	res, err := r.RequestFn(req, c)
-	store(res, err)
-	return res, err
+	var res *http.Response
+	err := safe.RunE(func() error {
+		var e error
+		res, e = r.RequestFn(req, c)
+		if e != nil {
+			return errors.WithStack(e)
+		}
+		return nil
+	})
+	return store(res, err)
+}
+
+// NewRunner will NOT execute commands and write files
+// it is NOT destructive it is just the most basic Runner
+// you can have.
+func NewRunner(ctx context.Context) *Runner {
+	pwd, _ := os.Getwd()
+	l := logrus.New()
+	l.Out = os.Stdout
+	l.SetLevel(logrus.DebugLevel)
+	r := &Runner{
+		Logger:  l,
+		Context: ctx,
+		Root:    pwd,
+		moot:    &sync.RWMutex{},
+		steps:   map[string]*Step{},
+	}
+	r.Disk = newDisk(r)
+	return r
 }

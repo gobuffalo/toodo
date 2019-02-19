@@ -2,15 +2,15 @@ package actions
 
 import (
 	"github.com/gobuffalo/buffalo"
-	popmw "github.com/gobuffalo/buffalo-pop/pop/popmw"
+	"github.com/gobuffalo/buffalo-pop/pop/popmw"
 	"github.com/gobuffalo/envy"
 	csrf "github.com/gobuffalo/mw-csrf"
 	forcessl "github.com/gobuffalo/mw-forcessl"
 	i18n "github.com/gobuffalo/mw-i18n"
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/unrolled/secure"
 
-	"github.com/gobuffalo/packr"
 	"github.com/gobuffalo/toodo/models"
 )
 
@@ -50,7 +50,7 @@ func App() *buffalo.App {
 
 		// Setup and use translations:
 		var err error
-		if T, err = i18n.New(packr.NewBox("../locales"), "en-US"); err != nil {
+		if T, err = i18n.New(packr.New("../locales", "../locales"), "en-US"); err != nil {
 			app.Stop(err)
 		}
 		app.Use(T.Middleware())

@@ -1,16 +1,26 @@
 package genny
 
 import (
+	"math/rand"
 	"os/exec"
 	"sync"
+	"time"
 
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/events"
+	"github.com/gobuffalo/packd"
 	"github.com/pkg/errors"
 )
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 // Generator is the basic type for generators to use
 type Generator struct {
+	StepName     string
 	Should       func(*Runner) bool
+	Root         string
+	ErrorFn      func(error)
 	runners      []RunFn
 	transformers []Transformer
 	moot         *sync.RWMutex
@@ -19,11 +29,18 @@ type Generator struct {
 // New, well-formed, generator
 func New() *Generator {
 	g := &Generator{
+		StepName:     stepName(),
 		runners:      []RunFn{},
 		moot:         &sync.RWMutex{},
 		transformers: []Transformer{},
 	}
 	return g
+}
+
+func (g *Generator) Event(kind string, payload events.Payload) {
+	g.RunFn(func(r *Runner) error {
+		return events.EmitPayload(kind, payload)
+	})
 }
 
 // File adds a file to be run when the generator is run
@@ -63,8 +80,8 @@ func (g *Generator) Command(cmd *exec.Cmd) {
 
 // Box walks through a packr.Box and adds Files for each entry
 // in the box.
-func (g *Generator) Box(box packr.Box) error {
-	return box.Walk(func(path string, f packr.File) error {
+func (g *Generator) Box(box packd.Walker) error {
+	return box.Walk(func(path string, f packd.File) error {
 		g.File(NewFile(path, f))
 		return nil
 	})
@@ -75,4 +92,13 @@ func (g *Generator) RunFn(fn RunFn) {
 	g.moot.Lock()
 	defer g.moot.Unlock()
 	g.runners = append(g.runners, fn)
+}
+
+func (g1 *Generator) Merge(g2 *Generator) {
+	g2.moot.Lock()
+	g1.moot.Lock()
+	g1.runners = append(g1.runners, g2.runners...)
+	g1.transformers = append(g1.transformers, g2.transformers...)
+	g1.moot.Unlock()
+	g2.moot.Unlock()
 }

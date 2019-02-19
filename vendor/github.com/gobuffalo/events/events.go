@@ -1,11 +1,9 @@
 package events
 
 import (
-	"fmt"
-	"runtime"
+	"strings"
 
 	"github.com/gobuffalo/mapi"
-	"github.com/pkg/errors"
 )
 
 type Payload = mapi.Mapi
@@ -27,6 +25,9 @@ func EmitPayload(kind string, payload interface{}) error {
 }
 
 func EmitError(kind string, err error, payload interface{}) error {
+	if err != nil && !strings.HasSuffix(kind, ":err") {
+		kind += ":err"
+	}
 	var pl Payload
 	pl, ok := payload.(Payload)
 	if !ok {
@@ -40,29 +41,4 @@ func EmitError(kind string, err error, payload interface{}) error {
 		Error:   err,
 	}
 	return Emit(e)
-}
-
-// NamedListen for events. Name is the name of the
-// listener NOT the events you want to listen for,
-// so something like "my-listener", "kafka-listener", etc...
-func NamedListen(name string, l Listener) (DeleteFn, error) {
-	return boss.Listen(name, l)
-}
-
-// Listen for events.
-func Listen(l Listener) (DeleteFn, error) {
-	_, file, line, _ := runtime.Caller(1)
-	return NamedListen(fmt.Sprintf("%s:%d", file, line), l)
-}
-
-type listable interface {
-	List() ([]string, error)
-}
-
-// List all listeners
-func List() ([]string, error) {
-	if l, ok := boss.(listable); ok {
-		return l.List()
-	}
-	return []string{}, errors.Errorf("manager %T does not implemented listable", boss)
 }

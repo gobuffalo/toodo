@@ -3,6 +3,7 @@ package events
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 )
 
 // Event represents different events
@@ -48,4 +49,8 @@ func (e Event) Validate() error {
 		return errors.New("kind can not be blank")
 	}
 	return nil
+}
+
+func (e Event) IsError() bool {
+	return strings.HasSuffix(e.Kind, ":err")
 }

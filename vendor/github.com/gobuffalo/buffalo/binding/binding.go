@@ -10,7 +10,6 @@ import (
 
 	"github.com/gobuffalo/pop/nulls"
 	"github.com/gobuffalo/x/httpx"
-	"github.com/markbates/oncer"
 	"github.com/monoculum/formam"
 	"github.com/pkg/errors"
 )
@@ -28,7 +27,7 @@ var binders = map[string]Binder{}
 var decoder *formam.Decoder
 var lock = &sync.Mutex{}
 var timeFormats = []string{
-	"2006-01-02T15:04:05Z07:00",
+	time.RFC3339,
 	"01/02/2006",
 	"2006-01-02",
 	"2006-01-02T15:04",
@@ -40,7 +39,6 @@ var timeFormats = []string{
 	time.RFC850,
 	time.RFC1123,
 	time.RFC1123Z,
-	time.RFC3339,
 	time.RFC3339Nano,
 	time.Kitchen,
 	time.Stamp,
@@ -53,12 +51,6 @@ var timeFormats = []string{
 // the binder will be able to use for decoding.
 func RegisterTimeFormats(layouts ...string) {
 	timeFormats = append(layouts, timeFormats...)
-}
-
-// RegisterCustomDecorder is deprecated. Use RegisterCustomDecoder instead
-func RegisterCustomDecorder(fn CustomTypeDecoder, types []interface{}, fields []interface{}) {
-	oncer.Deprecate(0, "binding.RegisterCustomDecorder", "Use binding.RegisterCustomDecoder instead")
-	RegisterCustomDecoder(fn, types, fields)
 }
 
 // RegisterCustomDecoder allows to define custom type decoders.

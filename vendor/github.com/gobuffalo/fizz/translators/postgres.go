@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/gobuffalo/fizz"
+	"github.com/pkg/errors"
 )
 
 type Postgres struct {
@@ -210,8 +209,27 @@ func (p *Postgres) colType(c fizz.Column) string {
 		return "UUID"
 	case "time", "datetime":
 		return "timestamp"
-	case "blob":
+	case "blob", "[]byte":
 		return "bytea"
+	case "float", "decimal":
+		if c.Options["precision"] != nil {
+			precision := c.Options["precision"]
+			if c.Options["scale"] != nil {
+				scale := c.Options["scale"]
+				return fmt.Sprintf("DECIMAL(%d,%d)", precision, scale)
+			}
+			return fmt.Sprintf("DECIMAL(%d)", precision)
+		}
+
+		return "DECIMAL"
+	case "[]string":
+		return "varchar[]"
+	case "[]float":
+		return "decimal[]"
+	case "[]int":
+		return "integer[]"
+	case "json":
+		return "jsonb"
 	default:
 		return c.ColType
 	}
