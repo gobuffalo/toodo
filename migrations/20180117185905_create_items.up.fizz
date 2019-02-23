@@ -1,7 +1,7 @@
-create_table("items", func(t) {
+create_table("items") {
 	t.Column("id", "uuid", {"primary": true})
 	t.Column("title", "string", {})
 	t.Column("body", "text", {"null": true})
 	t.Column("user_id", "uuid", {})
 	t.Column("completed", "bool", {})
-})
+}
