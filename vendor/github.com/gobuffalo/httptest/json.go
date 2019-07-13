@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/markbates/hmax"
+	"github.com/gobuffalo/httptest/internal/takeon/github.com/markbates/hmax"
 )
 
 type JSON struct {

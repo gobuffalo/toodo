@@ -5,7 +5,7 @@ import (
 	"reflect"
 
 	"github.com/gobuffalo/flect"
-	"github.com/gobuffalo/pop/nulls"
+	"github.com/gobuffalo/nulls"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -132,7 +132,7 @@ func (a *hasManyAssociation) AfterProcess() AssociationStatement {
 	ownerIDFieldName := "ID"
 	ownerID := reflect.Indirect(reflect.ValueOf(a.owner)).FieldByName(ownerIDFieldName).Interface()
 
-	ids := []interface{}{}
+	var ids []interface{}
 
 	for i := 0; i < v.Len(); i++ {
 		id := v.Index(i).FieldByName(belongingIDFieldName).Interface()

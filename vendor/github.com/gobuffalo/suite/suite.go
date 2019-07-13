@@ -5,9 +5,8 @@ import (
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/httptest"
-	"github.com/gobuffalo/mw-csrf"
+	csrf "github.com/gobuffalo/mw-csrf"
 	"github.com/gobuffalo/packd"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -30,7 +29,7 @@ func NewAction(app *buffalo.App) *Action {
 func NewActionWithFixtures(app *buffalo.App, box packd.Box) (*Action, error) {
 	m, err := NewModelWithFixtures(box)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	as := &Action{
 		App:   app,
@@ -51,6 +50,10 @@ func (as *Action) JSON(u string, args ...interface{}) *httptest.JSON {
 	return httptest.New(as.App).JSON(u, args...)
 }
 
+func (as *Action) XML(u string, args ...interface{}) *httptest.XML {
+	return httptest.New(as.App).XML(u, args...)
+}
+
 func (as *Action) SetupTest() {
 	as.App.SessionStore = NewSessionStore()
 	s, _ := as.App.SessionStore.New(nil, as.App.SessionName)
@@ -58,7 +61,9 @@ func (as *Action) SetupTest() {
 		Session: s,
 	}
 
-	as.Model.SetupTest()
+	if as.Model != nil {
+		as.Model.SetupTest()
+	}
 	as.csrf = csrf.New
 	csrf.New = func(next buffalo.Handler) buffalo.Handler {
 		return func(c buffalo.Context) error {
@@ -69,5 +74,7 @@ func (as *Action) SetupTest() {
 
 func (as *Action) TearDownTest() {
 	csrf.New = as.csrf
-	as.Model.TearDownTest()
+	if as.Model != nil {
+		as.Model.TearDownTest()
+	}
 }

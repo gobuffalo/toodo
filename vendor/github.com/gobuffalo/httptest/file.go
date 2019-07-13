@@ -5,8 +5,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-
-	"github.com/pkg/errors"
 )
 
 type File struct {
@@ -18,7 +16,7 @@ type File struct {
 func (r *Request) MultiPartPost(body interface{}, files ...File) (*Response, error) {
 	req, err := newMultipart(r.URL, "POST", body, files...)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	return r.perform(req), nil
 }
@@ -26,7 +24,7 @@ func (r *Request) MultiPartPost(body interface{}, files ...File) (*Response, err
 func (r *Request) MultiPartPut(body interface{}, files ...File) (*Response, error) {
 	req, err := newMultipart(r.URL, "PUT", body, files...)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	return r.perform(req), nil
 }
@@ -41,11 +39,11 @@ func newMultipart(url string, method string, body interface{}, files ...File) (*
 	for _, f := range files {
 		part, err := writer.CreateFormFile(f.ParamName, f.FileName)
 		if err != nil {
-			return nil, errors.WithStack(err)
+			return nil, err
 		}
 		_, err = io.Copy(part, f)
 		if err != nil {
-			return nil, errors.WithStack(err)
+			return nil, err
 		}
 	}
 
@@ -53,14 +51,14 @@ func newMultipart(url string, method string, body interface{}, files ...File) (*
 		for _, vv := range v {
 			err := writer.WriteField(k, vv)
 			if err != nil {
-				return nil, errors.WithStack(err)
+				return nil, err
 			}
 		}
 	}
 
 	req, err := http.NewRequest(method, url, bb)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req, nil

@@ -6,13 +6,12 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/packr/v2/plog"
-	"github.com/pkg/errors"
 )
 
 // Parser to find boxes
 type Parser struct {
-	Prospects     []*File // a list of files to check for boxes
-	IgnoreImports bool
+	Prospects	[]*File	// a list of files to check for boxes
+	IgnoreImports	bool
 }
 
 // Run the parser and run any boxes found
@@ -23,7 +22,7 @@ func (p *Parser) Run() (Boxes, error) {
 		v := NewVisitor(pros)
 		pbr, err := v.Run()
 		if err != nil {
-			return boxes, errors.WithStack(err)
+			return boxes, err
 		}
 		for _, b := range pbr {
 			plog.Debug(p, "Run", "file", pros.Name(), "box", b.Name)

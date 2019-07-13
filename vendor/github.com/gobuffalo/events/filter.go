@@ -3,7 +3,7 @@ package events
 import (
 	"regexp"
 
-	"github.com/markbates/safe"
+	"github.com/gobuffalo/events/internal/safe"
 )
 
 // Filter compiles the string as a regex and returns

@@ -130,7 +130,7 @@ package actions
 import (
 	"testing"
 
-	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/packr/v2"
 	"github.com/gobuffalo/suite"
 )
 
@@ -139,7 +139,7 @@ type ActionSuite struct {
 }
 
 func Test_ActionSuite(t *testing.T) {
-	action, err := suite.NewActionWithFixtures(App(), packr.NewBox("../fixtures"))
+	action, err := suite.NewActionWithFixtures(App(), packr.New("my box", "../fixtures"))
 	if err != nil {
 		t.Fatal(err)
 	}

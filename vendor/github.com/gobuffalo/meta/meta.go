@@ -75,6 +75,7 @@ func Named(name string, root string) App {
 		return oldSchool(app)
 	}
 	defer cf.Close()
+	app.InApp = true
 
 	if _, err := toml.DecodeReader(cf, &app); err != nil {
 		fmt.Println(err)
@@ -90,6 +91,9 @@ func New(root string) App {
 
 func oldSchool(app App) App {
 	root := app.Root
+	if _, err := os.Stat(filepath.Join(root, ".buffalo.dev.yml")); err == nil {
+		app.InApp = true
+	}
 	db := filepath.Join(root, "database.yml")
 	if _, err := os.Stat(db); err == nil {
 		app.WithPop = true

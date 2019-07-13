@@ -5,8 +5,8 @@ import (
 	"reflect"
 
 	"github.com/gobuffalo/flect"
-	"github.com/gobuffalo/pop/nulls"
-	"github.com/gobuffalo/x/defaults"
+	"github.com/gobuffalo/nulls"
+	"github.com/gobuffalo/pop/internal/defaults"
 )
 
 // hasOneAssociation is a 1 to 1 kind of association. It's used on
@@ -57,6 +57,9 @@ func hasOneAssociationBuilder(p associationParams) (Association, error) {
 }
 
 func (h *hasOneAssociation) Kind() reflect.Kind {
+	if h.ownedType.Kind() == reflect.Ptr {
+		return h.ownedType.Elem().Kind()
+	}
 	return h.ownedType.Kind()
 }
 

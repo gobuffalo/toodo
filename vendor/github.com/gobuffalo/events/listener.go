@@ -3,8 +3,6 @@ package events
 import (
 	"fmt"
 	"runtime"
-
-	"github.com/pkg/errors"
 )
 
 // Listener is a function capable of handling events
@@ -32,5 +30,5 @@ func List() ([]string, error) {
 	if l, ok := boss.(listable); ok {
 		return l.List()
 	}
-	return []string{}, errors.Errorf("manager %T does not implemented listable", boss)
+	return []string{}, fmt.Errorf("manager %T does not implemented listable", boss)
 }

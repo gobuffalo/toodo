@@ -3,11 +3,11 @@ GO_BIN ?= go
 
 install: deps
 	make tidy
+	packr2
 	$(GO_BIN) install -tags ${TAGS} -v ./buffalo
 	make tidy
 
 tidy:
-	packr2
 ifeq ($(GO111MODULE),on)
 	$(GO_BIN) mod tidy
 else
@@ -18,7 +18,9 @@ deps:
 	$(GO_BIN) get github.com/gobuffalo/release
 	$(GO_BIN) get github.com/gobuffalo/packr/v2/packr2
 	packr2 clean
+ifneq ($(GO111MODULE),on)
 	$(GO_BIN) get -tags ${TAGS} -u -t ./...
+endif
 	make tidy
 
 build:
@@ -29,6 +31,7 @@ build:
 test:
 	packr2
 	$(GO_BIN) test -tags ${TAGS} ./...
+	packr2
 	make tidy
 
 ci-deps:
@@ -41,7 +44,7 @@ ci-test:
 	docker build . --no-cache --build-arg TRAVIS_BRANCH=$$(git symbolic-ref --short HEAD)
 
 lint:
-	gometalinter --vendor ./... --deadline=1m --skip=internal
+	golangci-lint --vendor ./... --deadline=1m --skip=internal
 
 update:
 	$(GO_BIN) get -u -tags ${TAGS}

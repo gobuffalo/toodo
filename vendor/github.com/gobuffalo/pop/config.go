@@ -11,7 +11,7 @@ import (
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/pop/logging"
 	"github.com/pkg/errors"
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
 // ErrConfigFileNotFound is returned when the pop config file can't be found,
@@ -40,13 +40,13 @@ func init() {
 func LoadConfigFile() error {
 	path, err := findConfigPath()
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	Connections = map[string]*Connection{}
 	log(logging.Debug, "Loading config file from %s", path)
 	f, err := os.Open(path)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	return LoadFrom(f)
 }
@@ -104,7 +104,7 @@ func ParseConfig(r io.Reader) (map[string]*ConnectionDetails, error) {
 	})
 	b, err := ioutil.ReadAll(r)
 	if err != nil {
-		return nil, errors.WithStack(err)
+		return nil, err
 	}
 	t, err := tmpl.Parse(string(b))
 	if err != nil {

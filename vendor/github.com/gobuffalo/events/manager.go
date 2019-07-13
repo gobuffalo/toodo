@@ -1,10 +1,10 @@
 package events
 
 import (
+	"fmt"
 	"strings"
 
-	"github.com/markbates/safe"
-	"github.com/pkg/errors"
+	"github.com/gobuffalo/events/internal/safe"
 )
 
 type DeleteFn func()
@@ -39,7 +39,7 @@ type manager struct {
 func (m *manager) Listen(name string, l Listener) (DeleteFn, error) {
 	_, ok := m.listeners.Load(name)
 	if ok {
-		return nil, errors.Errorf("listener named %s is already listening", name)
+		return nil, fmt.Errorf("listener named %s is already listening", name)
 	}
 
 	m.listeners.Store(name, l)
@@ -53,11 +53,11 @@ func (m *manager) Listen(name string, l Listener) (DeleteFn, error) {
 
 func (m *manager) Emit(e Event) error {
 	if err := e.Validate(); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	e.Kind = strings.ToLower(e.Kind)
 	if e.IsError() && e.Error == nil {
-		e.Error = errors.New(e.Kind)
+		e.Error = fmt.Errorf(e.Kind)
 	}
 	go func(e Event) {
 		m.listeners.Range(func(key string, l Listener) bool {

@@ -9,8 +9,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/ajg/form"
-	"github.com/markbates/hmax"
+	"github.com/gobuffalo/httptest/internal/takeon/github.com/ajg/form"
+	"github.com/gobuffalo/httptest/internal/takeon/github.com/markbates/hmax"
 )
 
 type Request struct {

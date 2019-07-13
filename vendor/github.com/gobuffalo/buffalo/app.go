@@ -1,13 +1,12 @@
 package buffalo
 
 import (
+	"fmt"
 	"net/http"
 	"sync"
 
 	"github.com/gobuffalo/envy"
-	"github.com/gobuffalo/events"
 	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 )
 
 // App is where it all happens! It holds on to options,
@@ -34,8 +33,9 @@ func (a *App) Muxer() *mux.Router {
 
 // New returns a new instance of App and adds some sane, and useful, defaults.
 func New(opts Options) *App {
-	events.LoadPlugins()
+	LoadPlugins()
 	envy.Load()
+
 	opts = optionsWithDefaults(opts)
 
 	a := &App{
@@ -56,8 +56,9 @@ func New(opts Options) *App {
 	notFoundHandler := func(errorf string, code int) http.HandlerFunc {
 		return func(res http.ResponseWriter, req *http.Request) {
 			c := a.newContext(RouteInfo{}, res, req)
-			err := errors.Errorf(errorf, req.Method, req.URL.Path)
-			a.ErrorHandlers.Get(code)(code, err, c)
+			err := fmt.Errorf(errorf, req.Method, req.URL.Path)
+			_ = a.ErrorHandlers.Get(code)(code, err, c)
+
 		}
 	}
 

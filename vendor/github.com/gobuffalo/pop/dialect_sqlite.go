@@ -15,8 +15,8 @@ import (
 	"github.com/gobuffalo/fizz"
 	"github.com/gobuffalo/fizz/translators"
 	"github.com/gobuffalo/pop/columns"
+	"github.com/gobuffalo/pop/internal/defaults"
 	"github.com/gobuffalo/pop/logging"
-	"github.com/markbates/going/defaults"
 	_ "github.com/mattn/go-sqlite3" // Load SQLite3 CGo driver
 	"github.com/pkg/errors"
 )
@@ -33,9 +33,9 @@ func init() {
 var _ dialect = &sqlite{}
 
 type sqlite struct {
-	gil               *sync.Mutex
-	smGil             *sync.Mutex
-	ConnectionDetails *ConnectionDetails
+	commonDialect
+	gil   *sync.Mutex
+	smGil *sync.Mutex
 }
 
 func (m *sqlite) Name() string {
@@ -70,14 +70,14 @@ func (m *sqlite) Create(s store, model *Model, cols columns.Columns) error {
 			log(logging.SQL, query)
 			res, err := s.NamedExec(query, model.Value)
 			if err != nil {
-				return errors.WithStack(err)
+				return err
 			}
 			id, err = res.LastInsertId()
 			if err == nil {
 				model.setID(id)
 			}
 			if err != nil {
-				return errors.WithStack(err)
+				return err
 			}
 			return nil
 		}
@@ -210,16 +210,12 @@ func (m *sqlite) TruncateAll(tx *Connection) error {
 	return tx.RawQuery(strings.Join(stmts, "; ")).Exec()
 }
 
-func (m *sqlite) afterOpen(c *Connection) error {
-	return nil
-}
-
 func newSQLite(deets *ConnectionDetails) (dialect, error) {
 	deets.URL = fmt.Sprintf("sqlite3://%s", deets.Database)
 	cd := &sqlite{
-		gil:               &sync.Mutex{},
-		smGil:             &sync.Mutex{},
-		ConnectionDetails: deets,
+		gil:           &sync.Mutex{},
+		smGil:         &sync.Mutex{},
+		commonDialect: commonDialect{ConnectionDetails: deets},
 	}
 
 	return cd, nil

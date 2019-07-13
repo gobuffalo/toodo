@@ -4,9 +4,10 @@ import (
 	"html/template"
 	"net/http"
 
+	"github.com/gobuffalo/helpers/forms"
+	"github.com/gobuffalo/helpers/forms/bootstrap"
 	"github.com/gobuffalo/plush"
 	"github.com/gobuffalo/tags"
-	"github.com/pkg/errors"
 )
 
 func init() {
@@ -18,8 +19,10 @@ func init() {
 		}
 		t, err := tags.Pagination(pagination, opts)
 		if err != nil {
-			return "", errors.WithStack(err)
+			return "", err
 		}
 		return t.HTML(), nil
 	})
+	plush.Helpers.Add(forms.RemoteFormKey, bootstrap.RemoteForm)
+	plush.Helpers.Add(forms.RemoteFormForKey, bootstrap.RemoteFormFor)
 }

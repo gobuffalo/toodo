@@ -11,8 +11,8 @@ import (
 
 	"github.com/gobuffalo/flect"
 	"github.com/gobuffalo/tags"
-	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
+	"github.com/gofrs/uuid"
 )
 
 var arrayFieldRegExp = regexp.MustCompile("^([A-Za-z0-9]+)\\[(\\d+)\\]$")

@@ -6,15 +6,14 @@ import (
 
 	"github.com/gobuffalo/packd"
 	"github.com/gobuffalo/plush"
-	"github.com/gobuffalo/uuid"
-	"github.com/pkg/errors"
+	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func renderWithContext(file packd.File, ctx *plush.Context) (string, error) {
 	b, err := ioutil.ReadAll(file)
 	if err != nil {
-		return "", errors.WithStack(err)
+		return "", err
 	}
 
 	cm := map[string]interface{}{
@@ -37,7 +36,7 @@ func renderWithContext(file packd.File, ctx *plush.Context) (string, error) {
 func render(file packd.File) (string, error) {
 	b, err := ioutil.ReadAll(file)
 	if err != nil {
-		return "", errors.WithStack(err)
+		return "", err
 	}
 
 	return plush.Render(string(b), plush.NewContextWith(map[string]interface{}{

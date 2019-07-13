@@ -1,4 +1,4 @@
 package tags
 
 //Version holds current source version number
-const Version = "v2.0.13"
+const Version = "v2.1.0"

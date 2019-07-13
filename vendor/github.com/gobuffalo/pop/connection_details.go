@@ -8,16 +8,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gobuffalo/pop/internal/defaults"
+	"github.com/gobuffalo/pop/internal/oncer"
 	"github.com/gobuffalo/pop/logging"
-	"github.com/markbates/going/defaults"
-	"github.com/markbates/oncer"
 	"github.com/pkg/errors"
 )
 
 // ConnectionDetails stores the data needed to connect to a datasource
 type ConnectionDetails struct {
-	// Example: "postgres" or "sqlite3" or "mysql"
+	// Dialect is the pop dialect to use. Example: "postgres" or "sqlite3" or "mysql"
 	Dialect string
+	// Driver specifies the database driver to use (optional)
+	Driver string
 	// The name of your database. Example: "foo_development"
 	Database string
 	// The host of your database. Example: "127.0.0.1"
@@ -37,7 +39,7 @@ type ConnectionDetails struct {
 	URL string
 	// Defaults to 0 "unlimited". See https://golang.org/pkg/database/sql/#DB.SetMaxOpenConns
 	Pool int
-	// Defaults to 0 "unlimited". See https://golang.org/pkg/database/sql/#DB.SetMaxIdleConns
+	// Defaults to 2. See https://golang.org/pkg/database/sql/#DB.SetMaxIdleConns
 	IdlePool int
 	Options  map[string]string
 	// Query string encoded options from URL. Example: "sslmode=disable"

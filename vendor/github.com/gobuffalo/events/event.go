@@ -2,7 +2,7 @@ package events
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -46,7 +46,7 @@ func (e Event) MarshalJSON() ([]byte, error) {
 // Validate that an event is ready to be emitted
 func (e Event) Validate() error {
 	if len(e.Kind) == 0 {
-		return errors.New("kind can not be blank")
+		return fmt.Errorf("kind can not be blank")
 	}
 	return nil
 }

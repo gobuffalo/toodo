@@ -3,7 +3,7 @@ package events
 import (
 	"strings"
 
-	"github.com/gobuffalo/mapi"
+	"github.com/gobuffalo/events/internal/mapi"
 )
 
 type Payload = mapi.Mapi

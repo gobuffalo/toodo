@@ -1,6 +1,7 @@
 package fix
 
 import (
+	"fmt"
 	"path/filepath"
 	"sync"
 
@@ -8,7 +9,6 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/gobuffalo/packd"
-	"github.com/pkg/errors"
 )
 
 var scenes = map[string]Scenario{}
@@ -22,13 +22,13 @@ func InitWithContext(box packd.Walkable, ctx *plush.Context) error {
 
 		x, err := renderWithContext(file, ctx)
 		if err != nil {
-			return errors.Wrap(errors.WithStack(err), path)
+			return err
 		}
 
 		sc := Scenarios{}
 		_, err = toml.Decode(x, &sc)
 		if err != nil {
-			return errors.WithStack(err)
+			return err
 		}
 
 		moot.Lock()
@@ -49,13 +49,13 @@ func Init(box packd.Walkable) error {
 
 		x, err := render(file)
 		if err != nil {
-			return errors.Wrap(errors.WithStack(err), path)
+			return err
 		}
 
 		sc := Scenarios{}
 		_, err = toml.Decode(x, &sc)
 		if err != nil {
-			return errors.WithStack(err)
+			return err
 		}
 
 		moot.Lock()
@@ -73,7 +73,7 @@ func Find(name string) (Scenario, error) {
 	s, ok := scenes[name]
 	moot.RUnlock()
 	if !ok {
-		return Scenario{}, errors.Errorf("could not find a scenario named %q", name)
+		return Scenario{}, fmt.Errorf("could not find a scenario named %q", name)
 	}
 	return s, nil
 }

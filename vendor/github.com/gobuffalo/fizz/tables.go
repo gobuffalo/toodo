@@ -3,12 +3,12 @@ package fizz
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
 
 	"github.com/gobuffalo/plush"
-	"github.com/pkg/errors"
 )
 
 // Table is the table definition for fizz.
@@ -17,6 +17,7 @@ type Table struct {
 	Columns      []Column
 	Indexes      []Index
 	ForeignKeys  []ForeignKey
+	primaryKeys  []string
 	Options      map[string]interface{}
 	columnsCache map[string]struct{}
 }
@@ -61,9 +62,21 @@ func (t Table) Fizz() string {
 	if timestampsOpt {
 		buff.WriteString("\tt.Timestamps()\n")
 	}
+	// Write primary key (single column pk will be written in inline form as the column opt)
+	if len(t.primaryKeys) > 1 {
+		pks := make([]string, len(t.primaryKeys))
+		for i, pk := range t.primaryKeys {
+			pks[i] = fmt.Sprintf("\"%s\"", pk)
+		}
+		buff.WriteString(fmt.Sprintf("\tt.PrimaryKey(%s)\n", strings.Join(pks, ", ")))
+	}
 	// Write indexes
 	for _, i := range t.Indexes {
 		buff.WriteString(fmt.Sprintf("\t%s\n", i.String()))
+	}
+	// Write foreign keys
+	for _, fk := range t.ForeignKeys {
+		buff.WriteString(fmt.Sprintf("\t%s\n", fk.String()))
 	}
 	buff.WriteString("}")
 	return buff.String()
@@ -85,13 +98,20 @@ func (t *Table) Column(name string, colType string, options Options) error {
 	}
 	var primary bool
 	if _, ok := options["primary"]; ok {
+		if t.primaryKeys != nil {
+			return errors.New("could not define multiple primary keys")
+		}
 		primary = true
+		t.primaryKeys = []string{name}
 	}
 	c := Column{
 		Name:    name,
 		ColType: colType,
 		Options: options,
 		Primary: primary,
+	}
+	if t.columnsCache == nil {
+		t.columnsCache = make(map[string]struct{})
 	}
 	t.columnsCache[name] = struct{}{}
 	// Ensure id is first
@@ -107,7 +127,7 @@ func (t *Table) Column(name string, colType string, options Options) error {
 func (t *Table) ForeignKey(column string, refs interface{}, options Options) error {
 	fkr, err := parseForeignKeyRef(refs)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 	fk := ForeignKey{
 		Column:     column,
@@ -130,17 +150,17 @@ func (t *Table) Index(columns interface{}, options Options) error {
 	i := Index{}
 	switch tp := columns.(type) {
 	default:
-		return errors.Errorf("unexpected type %T for %s index columns", tp, t.Name) // %T prints whatever type t has
+		return fmt.Errorf("unexpected type %T for %s index columns", tp, t.Name) // %T prints whatever type t has
 	case string:
 		i.Columns = []string{tp}
 	case []string:
 		if len(tp) == 0 {
-			return errors.Errorf("expected at least one column to apply %s index", t.Name)
+			return fmt.Errorf("expected at least one column to apply %s index", t.Name)
 		}
 		i.Columns = tp
 	case []interface{}:
 		if len(tp) == 0 {
-			return errors.Errorf("expected at least one column to apply %s index", t.Name)
+			return fmt.Errorf("expected at least one column to apply %s index", t.Name)
 		}
 		cl := make([]string, len(tp))
 		for i, c := range tp {
@@ -169,6 +189,36 @@ func (t *Table) Timestamps() error {
 		return err
 	}
 	return t.Timestamp("updated_at")
+}
+
+// PrimaryKey adds a primary key to the table. It's useful to define a composite
+// primary key.
+func (t *Table) PrimaryKey(pk ...string) error {
+	if len(pk) == 0 {
+		return errors.New("missing columns for primary key")
+	}
+	if t.primaryKeys != nil {
+		return errors.New("duplicate primary key")
+	}
+	if !t.HasColumns(pk...) {
+		return errors.New("columns must be declared before the primary key")
+	}
+	if len(pk) == 1 {
+		for i, c := range t.Columns {
+			if c.Name == pk[0] {
+				t.Columns[i].Primary = true
+				break
+			}
+		}
+	}
+	t.primaryKeys = make([]string, 0)
+	t.primaryKeys = append(t.primaryKeys, pk...)
+	return nil
+}
+
+// PrimaryKeys gets the list of registered primary key fields.
+func (t *Table) PrimaryKeys() []string {
+	return t.primaryKeys
 }
 
 // ColumnNames returns the names of the Table's columns.
@@ -214,7 +264,7 @@ func (f fizzer) CreateTable(name string, opts map[string]interface{}, help plush
 		ctx := help.Context.New()
 		ctx.Set("t", &t)
 		if _, err := help.BlockWith(ctx); err != nil {
-			return errors.WithStack(err)
+			return err
 		}
 	}
 

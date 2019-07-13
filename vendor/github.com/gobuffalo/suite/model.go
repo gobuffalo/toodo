@@ -37,7 +37,7 @@ func (m *Model) DBDelta(delta int, name string, fn func()) {
 	fn()
 	ec, err := m.DB.Count(name)
 	m.NoError(err)
-	m.Equal(ec, sc+delta)
+	m.Equal(sc+delta, ec)
 }
 
 func (as *Model) LoadFixture(name string) {
