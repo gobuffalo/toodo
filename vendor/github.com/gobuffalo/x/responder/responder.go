@@ -1,11 +1,11 @@
 package responder
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 
 	"github.com/gobuffalo/buffalo"
-	"github.com/pkg/errors"
 )
 
 // Responder holds the mappings of content-type to handler
@@ -51,7 +51,7 @@ func (r Responder) Respond(ctx buffalo.Context) error {
 	if h, ok := r.wants["html"]; ok {
 		return h(ctx)
 	}
-	return errors.New("could not find any matching handlers for this request")
+	return fmt.Errorf("could not find any matching handlers for this request")
 }
 
 // Wants maps a content-type, or part of one ("json", "html", "form", etc...),

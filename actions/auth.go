@@ -15,7 +15,7 @@ import (
 // AuthNew loads the signin page
 func AuthNew(c buffalo.Context) error {
 	c.Set("user", models.User{})
-	return c.Render(200, r.HTML("auth/new.html"))
+	return c.Render(200, r.HTML("auth/new.plush.html"))
 }
 
 // AuthCreate attempts to log the user in with an existing account.
@@ -36,7 +36,7 @@ func AuthCreate(c buffalo.Context) error {
 		verrs := validate.NewErrors()
 		verrs.Add("email", "invalid email/password")
 		c.Set("errors", verrs)
-		return c.Render(422, r.HTML("auth/new.html"))
+		return c.Render(422, r.HTML("auth/new.plush.html"))
 	}
 
 	if err != nil {

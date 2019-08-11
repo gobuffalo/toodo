@@ -1,0 +1,11 @@
+<ul class="list-unstyled list-inline">
+  <li><a href="<%= newItemsPath() %>" class="btn btn-primary">Create New Item</a></li>
+</ul>
+
+<ul class="list-group">
+  <%= for (item) in items { return partial("items/li.plush.html", {item: item}) } %>
+</ul>
+
+<div class="text-center">
+  <%= paginator(pagination) %>
+</div>

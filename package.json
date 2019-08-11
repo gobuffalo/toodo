@@ -1,9 +1,4 @@
 {
-  "name": "buffalo",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "repository": "github.com/gobuffalo/buffalo",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
     "bootstrap": "4.3.1",
@@ -33,5 +28,14 @@
     "webpack-cli": "3.1.0",
     "webpack-livereload-plugin": "2.1.1",
     "webpack-manifest-plugin": "~2.0.0"
-  }
+  },
+  "license": "MIT",
+  "main": "index.js",
+  "name": "buffalo",
+  "repository": "github.com/gobuffalo/buffalo",
+  "scripts": {
+    "build": "webpack -p --progress",
+    "dev": "webpack --watch"
+  },
+  "version": "1.0.0"
 }

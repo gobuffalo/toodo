@@ -55,7 +55,7 @@ func (v ItemsResource) List(c buffalo.Context) error {
 	// Add the paginator to the context so it can be used in the template.
 	c.Set("pagination", q.Paginator)
 
-	return c.Render(200, r.HTML("items/index.html"))
+	return c.Render(200, r.HTML("items/index.plush.html"))
 }
 
 // Show gets the data for one Item. This function is mapped to
@@ -72,7 +72,7 @@ func (v ItemsResource) Show(c buffalo.Context) error {
 	// Make item available inside the html template
 	c.Set("item", item)
 
-	return c.Render(200, r.HTML("items/show.html"))
+	return c.Render(200, r.HTML("items/show.plush.html"))
 }
 
 // New renders the form for creating a new Item.
@@ -81,7 +81,7 @@ func (v ItemsResource) New(c buffalo.Context) error {
 	// Make item available inside the html template
 	c.Set("item", &models.Item{})
 
-	return c.Render(200, r.HTML("items/new.html"))
+	return c.Render(200, r.HTML("items/new.plush.html"))
 }
 
 // Create adds a Item to the DB. This function is mapped to the
@@ -122,7 +122,7 @@ func (v ItemsResource) Create(c buffalo.Context) error {
 
 		// Render again the new.html template that the user can
 		// correct the input.
-		return c.Render(422, r.HTML("items/new.html"))
+		return c.Render(422, r.HTML("items/new.plush.html"))
 	}
 
 	// If there are no errors set a success message
@@ -144,7 +144,7 @@ func (v ItemsResource) Edit(c buffalo.Context) error {
 
 	// Make item available inside the html template
 	c.Set("item", item)
-	return c.Render(200, r.HTML("items/edit.html"))
+	return c.Render(200, r.HTML("items/edit.plush.html"))
 }
 
 // Update changes a Item in the DB. This function is mapped to
@@ -183,17 +183,17 @@ func (v ItemsResource) Update(c buffalo.Context) error {
 		// Render again the edit.html template that the user can
 		// correct the input.
 		res := responder.Wants("javascript", func(c buffalo.Context) error {
-			return c.Render(422, r.JavaScript("items/edit.js"))
+			return c.Render(422, r.JavaScript("items/edit.plush.js"))
 		})
 		res.Wants("html", func(c buffalo.Context) error {
-			return c.Render(422, r.HTML("items/edit.html"))
+			return c.Render(422, r.HTML("items/edit.plush.html"))
 		})
 		return res.Respond(c)
 	}
 
 	res := responder.Wants("javascript", func(c buffalo.Context) error {
 		c.Set("item", item)
-		return c.Render(200, r.JavaScript("items/edit.js"))
+		return c.Render(200, r.JavaScript("items/edit.plush.js"))
 	})
 	res.Wants("html", func(c buffalo.Context) error {
 		// If there are no errors set a success message
@@ -228,7 +228,7 @@ func (v ItemsResource) Destroy(c buffalo.Context) error {
 
 	res := responder.Wants("javascript", func(c buffalo.Context) error {
 		c.Set("item", item)
-		return c.Render(200, r.JavaScript("items/destroy.js"))
+		return c.Render(200, r.JavaScript("items/destroy.plush.js"))
 	})
 	res.Wants("html", func(c buffalo.Context) error {
 		// If there are no errors set a flash message
