@@ -20,7 +20,6 @@ require (
 	github.com/gobuffalo/pop v4.11.2+incompatible
 	github.com/gobuffalo/suite v2.8.1+incompatible
 	github.com/gobuffalo/validate v2.0.3+incompatible
-	github.com/gobuffalo/x v0.1.0
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
 	github.com/markbates/going v1.0.3

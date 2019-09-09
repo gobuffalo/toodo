@@ -5,8 +5,8 @@ import (
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/toodo/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/toodo/models"
-	"github.com/pkg/errors"
 )
 
 func UsersNew(c buffalo.Context) error {
@@ -19,13 +19,13 @@ func UsersNew(c buffalo.Context) error {
 func UsersCreate(c buffalo.Context) error {
 	u := &models.User{}
 	if err := c.Bind(u); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	tx := c.Value("tx").(*pop.Connection)
 	verrs, err := u.Create(tx)
 	if err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	if verrs.HasAny() {
@@ -50,10 +50,10 @@ func SetCurrentUser(next buffalo.Handler) buffalo.Handler {
 			err := tx.Find(u, uid)
 			if err != nil {
 				c.Session().Clear()
-				if errors.Cause(err) == sql.ErrNoRows {
+				if errx.Unwrap(err) == sql.ErrNoRows {
 					return c.Redirect(302, "/")
 				}
-				return errors.WithStack(err)
+				return err
 			}
 			c.Set("current_user", u)
 		}

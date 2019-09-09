@@ -6,9 +6,9 @@ import (
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/toodo/internal/takeon/github.com/markbates/errx"
 	"github.com/gobuffalo/toodo/models"
 	"github.com/gobuffalo/validate"
-	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -22,7 +22,7 @@ func AuthNew(c buffalo.Context) error {
 func AuthCreate(c buffalo.Context) error {
 	u := &models.User{}
 	if err := c.Bind(u); err != nil {
-		return errors.WithStack(err)
+		return err
 	}
 
 	tx := c.Value("tx").(*pop.Connection)
@@ -40,11 +40,11 @@ func AuthCreate(c buffalo.Context) error {
 	}
 
 	if err != nil {
-		if errors.Cause(err) == sql.ErrNoRows {
+		if errx.Unwrap(err) == sql.ErrNoRows {
 			// couldn't find an user with the supplied email address.
 			return bad()
 		}
-		return errors.WithStack(err)
+		return err
 	}
 
 	// confirm that the given password matches the hashed password from the db

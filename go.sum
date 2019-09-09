@@ -494,9 +494,8 @@ github.com/gobuffalo/x v0.0.0-20181025165825-f204f550da9d/go.mod h1:Qh2Pb/Ak1Ko2
 github.com/gobuffalo/x v0.0.0-20181025192250-1ef645d63fe8/go.mod h1:AIlnMGlYXOCsoCntLPFLYtrJNS/pc2HD4IdSXH62TpU=
 github.com/gobuffalo/x v0.0.0-20181109195216-5b3131238124/go.mod h1:GpdLUY6/Ztf/3FfxfwsLkDqAGZ0brhlh7LzIibHyZp0=
 github.com/gobuffalo/x v0.0.0-20181110221217-14085ca3e1a9/go.mod h1:ig5vdn4+5IPtxgESlZWo1SSDyHKKef8EjVVKhY9kkIQ=
+github.com/gobuffalo/x v0.0.0-20190224155809-6bb134105960 h1:DoUD23uwnzKJ3t5HH2SeTIszWmc13AV9TAdMhtXQts8=
 github.com/gobuffalo/x v0.0.0-20190224155809-6bb134105960/go.mod h1:ig5vdn4+5IPtxgESlZWo1SSDyHKKef8EjVVKhY9kkIQ=
-github.com/gobuffalo/x v0.1.0 h1:ILV6PIfyQto7RKfxRutQUuW234x+A5/+FRQpik0hNrM=
-github.com/gobuffalo/x v0.1.0/go.mod h1:WevpGD+5YOreDJznWevcn8NTmQEW5STSBgIkpkjzqXc=
 github.com/gofrs/uuid v3.1.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/gofrs/uuid v3.2.0+incompatible h1:y12jRkkFxsd7GpqdSZ+/KCs/fJbqpEXSGd4+jfEaewE=
 github.com/gofrs/uuid v3.2.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
