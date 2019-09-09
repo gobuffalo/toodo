@@ -2,18 +2,18 @@
 @import "~@fortawesome/fontawesome-free/css/all.min.css";
 
 .navbar-btn {
-  margin-top: 0px;
-  margin-bottom: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 h1 {
-  &.completed {
-    text-decoration: line-through;
-  }
+    &.completed {
+        text-decoration: line-through;
+    }
 }
 
 .completed {
-  label {
-    text-decoration: line-through;
-  }
+    label {
+        text-decoration: line-through;
+    }
 }
